@@ -67,7 +67,19 @@ glyph offsets in `fm-ui-kit`.
 
 ### Rendering cost
 
-<!-- ELEVATION-METRICS -->
+Idle resident memory of the release builds, home folder open, before and
+after this change. Same machine type, Xvfb with Mesa software rendering;
+after-values were identical across two runs:
+
+| | Flutter | iced | Dear ImGui | egui | Slint | Zig + Clay |
+|---|---|---|---|---|---|---|
+| Before | 270 MB | 149 MB | 109 MB | 113 MB | 138 MB | 126 MB |
+| After | 270 MB | 150 MB | 109 MB | 114 MB | **145 MB** | 126 MB |
+
+Only Slint grew noticeably (+7 MB). That's consistent with its renderer
+caching each drop shadow as a pre-blurred image, rather than computing blur
+analytically in a shader as iced and Flutter do. Everything else is within
+noise.
 
 GPU-backed toolkits (Flutter, iced, Slint/femtovg, egui) draw shadows in the
 same pass as everything else, so a handful of them is essentially free. The
