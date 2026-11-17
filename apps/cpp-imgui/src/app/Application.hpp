@@ -16,12 +16,12 @@ struct Services {
 /// Owns the window and runs the frame loop: tick view model → draw view →
 /// dispatch actions → render.
 class Application {
-public:
+  public:
     Application(Services services, std::filesystem::path assetDir);
 
     int run();
 
-private:
+  private:
     Services services_;
     std::filesystem::path assetDir_;
 };

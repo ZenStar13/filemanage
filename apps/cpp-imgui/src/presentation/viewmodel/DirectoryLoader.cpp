@@ -5,7 +5,8 @@
 
 namespace fm::presentation {
 
-DirectoryLoader::DirectoryLoader(application::BrowseDirectory browse) : browse_(std::move(browse)) {}
+DirectoryLoader::DirectoryLoader(application::BrowseDirectory browse)
+    : browse_(std::move(browse)) {}
 
 void DirectoryLoader::request(std::uint64_t ticket, domain::DirectoryPath path) {
     // The worker only captures shared state, so it may safely outlive us

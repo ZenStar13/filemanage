@@ -8,9 +8,7 @@ pub struct XdgPlaces;
 
 impl PlacesProvider for XdgPlaces {
     fn home(&self) -> DirectoryPath {
-        dirs::home_dir()
-            .and_then(DirectoryPath::new)
-            .unwrap_or_else(DirectoryPath::root)
+        dirs::home_dir().and_then(DirectoryPath::new).unwrap_or_else(DirectoryPath::root)
     }
 
     fn places(&self) -> Vec<Place> {

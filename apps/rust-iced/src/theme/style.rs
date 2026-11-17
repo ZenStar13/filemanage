@@ -30,10 +30,7 @@ pub fn toolbar(_: &Theme) -> container::Style {
 }
 
 pub fn sidebar(_: &Theme) -> container::Style {
-    container::Style {
-        background: Some(Background::Color(palette::SURFACE)),
-        ..container::Style::default()
-    }
+    container::Style { background: Some(Background::Color(palette::SURFACE)), ..container::Style::default() }
 }
 
 pub fn content(_: &Theme) -> container::Style {

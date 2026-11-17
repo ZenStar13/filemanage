@@ -53,7 +53,8 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
                 let selected = vm.selected() == Some(&entry.path);
                 row.set_selected(selected);
                 let (glyph, tone) = glyphs::for_entry(entry);
-                let muted = |text: String| RichText::new(text).size(size::FONT_SMALL).color(palette::TEXT_SECONDARY);
+                let muted =
+                    |text: String| RichText::new(text).size(size::FONT_SMALL).color(palette::TEXT_SECONDARY);
 
                 row.col(|ui| {
                     ui.add_space(12.0);
@@ -74,7 +75,12 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
                     let response = row.response();
                     let outline = response.rect.shrink2(egui::vec2(1.0, 0.0));
                     let painter = response.ctx.layer_painter(response.layer_id);
-                    painter.rect_stroke(outline, CornerRadius::same(4), Stroke::new(1.0, palette::AQUA), StrokeKind::Inside);
+                    painter.rect_stroke(
+                        outline,
+                        CornerRadius::same(4),
+                        Stroke::new(1.0, palette::AQUA),
+                        StrokeKind::Inside,
+                    );
                 }
 
                 let response = row.response();

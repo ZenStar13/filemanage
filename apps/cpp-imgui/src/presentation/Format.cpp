@@ -16,7 +16,8 @@ std::string size(std::uintmax_t bytes) {
         value /= 1024.0;
         ++unit;
     }
-    return unit == 0 ? std::format("{} B", bytes) : std::format("{:.1f} {}", value, kUnits.at(unit));
+    return unit == 0 ? std::format("{} B", bytes)
+                     : std::format("{:.1f} {}", value, kUnits.at(unit));
 }
 
 std::string entrySize(const domain::FileEntry& entry) {
@@ -38,11 +39,16 @@ std::string modified(const domain::FileEntry& entry) {
 std::string kind(const domain::FileEntry& entry) {
     using domain::EntryKind;
     switch (entry.kind) {
-    case EntryKind::Directory: return "Folder";
-    case EntryKind::SymlinkToDirectory: return "Link to folder";
-    case EntryKind::SymlinkToFile: return "Link";
-    case EntryKind::Other: return "Special";
-    case EntryKind::File: break;
+    case EntryKind::Directory:
+        return "Folder";
+    case EntryKind::SymlinkToDirectory:
+        return "Link to folder";
+    case EntryKind::SymlinkToFile:
+        return "Link";
+    case EntryKind::Other:
+        return "Special";
+    case EntryKind::File:
+        break;
     }
     auto ext = entry.extension();
     if (ext.empty()) {

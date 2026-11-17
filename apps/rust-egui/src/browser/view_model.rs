@@ -54,7 +54,11 @@ impl std::fmt::Debug for BrowserViewModel {
 }
 
 impl BrowserViewModel {
-    pub fn new(browse: BrowseDirectory, places: &ListPlaces, waker: impl Fn() + Send + Sync + 'static) -> Self {
+    pub fn new(
+        browse: BrowseDirectory,
+        places: &ListPlaces,
+        waker: impl Fn() + Send + Sync + 'static,
+    ) -> Self {
         let (sender, receiver) = mpsc::channel();
         let mut vm = Self {
             browse,

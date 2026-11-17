@@ -27,10 +27,7 @@ pub fn entry_size(entry: &FileEntry) -> String {
 
 /// Local date-time, e.g. `2026-11-17 09:42`.
 pub fn modified(time: Option<SystemTime>) -> String {
-    time.map_or_else(
-        || "—".to_owned(),
-        |t| DateTime::<Local>::from(t).format("%Y-%m-%d %H:%M").to_string(),
-    )
+    time.map_or_else(|| "—".to_owned(), |t| DateTime::<Local>::from(t).format("%Y-%m-%d %H:%M").to_string())
 }
 
 /// Short type label for the "Kind" column.
@@ -40,9 +37,9 @@ pub fn kind(entry: &FileEntry) -> String {
         EntryKind::Symlink { target_is_dir: true } => "Link to folder".to_owned(),
         EntryKind::Symlink { target_is_dir: false } => "Link".to_owned(),
         EntryKind::Other => "Special".to_owned(),
-        EntryKind::File => entry
-            .extension()
-            .map_or_else(|| "File".to_owned(), |ext| format!("{} file", ext.to_uppercase())),
+        EntryKind::File => {
+            entry.extension().map_or_else(|| "File".to_owned(), |ext| format!("{} file", ext.to_uppercase()))
+        }
     }
 }
 

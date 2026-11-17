@@ -25,9 +25,9 @@ impl LocalFileSystem {
         // to detect links. For links we follow once to learn the target type.
         let metadata = dir_entry.metadata().ok();
         let kind = match &metadata {
-            Some(m) if m.is_symlink() => EntryKind::Symlink {
-                target_is_dir: fs::metadata(&path).is_ok_and(|t| t.is_dir()),
-            },
+            Some(m) if m.is_symlink() => {
+                EntryKind::Symlink { target_is_dir: fs::metadata(&path).is_ok_and(|t| t.is_dir()) }
+            }
             Some(m) if m.is_dir() => EntryKind::Directory,
             Some(m) if m.is_file() => EntryKind::File,
             _ => EntryKind::Other,
@@ -67,9 +67,7 @@ mod tests {
         let tmp = std::env::temp_dir().join(format!("fm-core-test-{}", std::process::id()));
         fs::create_dir_all(tmp.join("sub")).unwrap();
         fs::write(tmp.join("file.txt"), b"hello").unwrap();
-        let entries = LocalFileSystem
-            .read_directory(&DirectoryPath::new(&tmp).unwrap())
-            .unwrap();
+        let entries = LocalFileSystem.read_directory(&DirectoryPath::new(&tmp).unwrap()).unwrap();
         fs::remove_dir_all(&tmp).unwrap();
         let file = entries.iter().find(|e| e.name == "file.txt").unwrap();
         assert_eq!((file.kind, file.size), (EntryKind::File, Some(5)));

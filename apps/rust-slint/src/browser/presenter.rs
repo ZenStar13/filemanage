@@ -2,8 +2,8 @@
 //! `ui/view-model.slint`. No state, no side effects — trivially testable.
 
 use fm_core::domain::{DirectoryPath, FileEntry, Place};
-use fm_ui_kit::glyphs::{self, IconTone as KitTone};
 use fm_ui_kit::format;
+use fm_ui_kit::glyphs::{self, IconTone as KitTone};
 use slint::SharedString;
 
 use crate::{Crumb, EntryRow, IconTone, PlaceItem};

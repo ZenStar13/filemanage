@@ -128,7 +128,9 @@ impl BrowserViewModel {
     }
 
     fn open_place(self: &Rc<Self>, index: i32) {
-        let path = usize::try_from(index).ok().and_then(|i| self.state.borrow().places.get(i).map(|p| p.path.clone()));
+        let path = usize::try_from(index)
+            .ok()
+            .and_then(|i| self.state.borrow().places.get(i).map(|p| p.path.clone()));
         if let Some(path) = path {
             self.load(path, Navigation::Visit);
         }
@@ -188,9 +190,8 @@ impl BrowserViewModel {
             let state = self.state.borrow();
             let entries = state.visible();
             let Some(last) = entries.len().checked_sub(1) else { return };
-            let next = state
-                .selected_index()
-                .map_or(0, |i| i.saturating_add_signed(delta as isize).min(last));
+            let next =
+                state.selected_index().map_or(0, |i| i.saturating_add_signed(delta as isize).min(last));
             entries[next].path.clone()
         };
         self.set_selection(Some(next), true);

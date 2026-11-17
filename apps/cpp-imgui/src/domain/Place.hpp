@@ -7,7 +7,16 @@
 
 namespace fm::domain {
 
-enum class PlaceKind : std::uint8_t { Home, Desktop, Documents, Downloads, Pictures, Music, Videos, Root };
+enum class PlaceKind : std::uint8_t {
+    Home,
+    Desktop,
+    Documents,
+    Downloads,
+    Pictures,
+    Music,
+    Videos,
+    Root
+};
 
 /// Value object: a named shortcut shown in the sidebar.
 struct Place {

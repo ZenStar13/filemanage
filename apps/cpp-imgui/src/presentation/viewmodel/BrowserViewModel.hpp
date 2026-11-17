@@ -19,7 +19,7 @@ namespace fm::presentation {
 /// and emit `Action`s; `dispatch` is the single entry point for mutations and
 /// `tick` integrates asynchronous results. No ImGui code lives here.
 class BrowserViewModel {
-public:
+  public:
     BrowserViewModel(application::BrowseDirectory browse, const application::ListPlaces& places);
 
     // ---- State ------------------------------------------------------------
@@ -42,8 +42,10 @@ public:
     void dispatch(const Action& action);
     void tick();
 
-private:
-    struct Visit { domain::DirectoryPath destination; };
+  private:
+    struct Visit {
+        domain::DirectoryPath destination;
+    };
     struct Back {};
     struct Forward {};
     struct Up {};

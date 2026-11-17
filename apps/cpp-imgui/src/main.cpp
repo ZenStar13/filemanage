@@ -24,8 +24,11 @@ std::filesystem::path assetDirectory() {
 int main() {
     try {
         fm::app::Services services{
-            .browse = fm::application::BrowseDirectory{std::make_shared<fm::infrastructure::LocalFileSystem>()},
-            .places = fm::application::ListPlaces{std::make_shared<fm::infrastructure::XdgPlaces>()},
+            .browse =
+                fm::application::BrowseDirectory{
+                    std::make_shared<fm::infrastructure::LocalFileSystem>()},
+            .places =
+                fm::application::ListPlaces{std::make_shared<fm::infrastructure::XdgPlaces>()},
         };
         fm::app::Application app{std::move(services), assetDirectory()};
         return app.run();

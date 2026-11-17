@@ -19,8 +19,9 @@ void emptyState(const char* message) {
     const ImVec2 pos = ImGui::GetWindowPos();
     const ImVec2 size = ImGui::GetWindowSize();
     const ImVec2 text = ImGui::CalcTextSize(message);
-    ImGui::GetWindowDrawList()->AddText({pos.x + (size.x - text.x) / 2, pos.y + (size.y - text.y) / 2},
-                                        ImGui::GetColorU32(palette::kTextSecondary), message);
+    ImGui::GetWindowDrawList()->AddText(
+        {pos.x + (size.x - text.x) / 2, pos.y + (size.y - text.y) / 2},
+        ImGui::GetColorU32(palette::kTextSecondary), message);
 }
 
 void mutedCell(const std::string& text, bool alignRight = false) {
@@ -92,7 +93,8 @@ void FileTable::draw(const BrowserViewModel& vm, ActionQueue& actions, const Fon
 
             const ImVec2 rowStart = ImGui::GetCursorScreenPos();
             if (ImGui::Selectable("##row", selected,
-                                  ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowDoubleClick |
+                                  ImGuiSelectableFlags_SpanAllColumns |
+                                      ImGuiSelectableFlags_AllowDoubleClick |
                                       ImGuiSelectableFlags_AllowOverlap,
                                   {0, dimens::kRowHeight})) {
                 if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
@@ -110,21 +112,28 @@ void FileTable::draw(const BrowserViewModel& vm, ActionQueue& actions, const Fon
                 const ImVec2 winPos = ImGui::GetWindowPos();
                 const ImVec2 winSize = ImGui::GetWindowSize();
                 const float left = winPos.x + 1;
-                const float scrollbar = ImGui::GetScrollMaxY() > 0 ? ImGui::GetStyle().ScrollbarSize : 0;
-                const ImVec2 rowEnd{winPos.x + winSize.x - scrollbar - 1, rowStart.y + dimens::kRowHeight};
+                const float scrollbar =
+                    ImGui::GetScrollMaxY() > 0 ? ImGui::GetStyle().ScrollbarSize : 0;
+                const ImVec2 rowEnd{winPos.x + winSize.x - scrollbar - 1,
+                                    rowStart.y + dimens::kRowHeight};
                 ImDrawList* outline = ImGui::GetWindowDrawList();
-                outline->PushClipRect({winPos.x, winPos.y + kHeaderHeight}, {winPos.x + winSize.x, winPos.y + winSize.y});
-                outline->AddRect({left, rowStart.y}, rowEnd, ImGui::GetColorU32(palette::kAqua), dimens::kRadiusSm);
+                outline->PushClipRect({winPos.x, winPos.y + kHeaderHeight},
+                                      {winPos.x + winSize.x, winPos.y + winSize.y});
+                outline->AddRect({left, rowStart.y}, rowEnd, ImGui::GetColorU32(palette::kAqua),
+                                 dimens::kRadiusSm);
                 outline->PopClipRect();
             }
 
             ImGui::SameLine(0, 0);
             const float textY = rowStart.y + (dimens::kRowHeight - ImGui::GetFontSize()) / 2;
             ImDrawList* draw = ImGui::GetWindowDrawList();
-            draw->AddText({rowStart.x + dimens::kXs, textY}, ImGui::GetColorU32(icon.color), icon.glyph);
-            draw->PushClipRect(rowStart, {rowStart.x + ImGui::GetColumnWidth(), rowStart.y + dimens::kRowHeight}, true);
-            draw->AddText({rowStart.x + dimens::kXs + 26, textY}, ImGui::GetColorU32(palette::kTextPrimary),
-                          entry.name.c_str());
+            draw->AddText({rowStart.x + dimens::kXs, textY}, ImGui::GetColorU32(icon.color),
+                          icon.glyph);
+            draw->PushClipRect(
+                rowStart, {rowStart.x + ImGui::GetColumnWidth(), rowStart.y + dimens::kRowHeight},
+                true);
+            draw->AddText({rowStart.x + dimens::kXs + 26, textY},
+                          ImGui::GetColorU32(palette::kTextPrimary), entry.name.c_str());
             draw->PopClipRect();
 
             ImGui::TableSetColumnIndex(1);

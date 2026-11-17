@@ -2,7 +2,6 @@
 #include "infrastructure/LocalFileSystem.hpp"
 
 #include <doctest/doctest.h>
-
 #include <fstream>
 #include <memory>
 
@@ -11,15 +10,25 @@ using namespace fm;
 namespace {
 
 class FakeFileSystem final : public domain::FileSystemRepository {
-public:
+  public:
     [[nodiscard]] std::expected<std::vector<domain::FileEntry>, domain::FsError>
     readDirectory(const domain::DirectoryPath& path) const override {
         if (path.string() == "/locked") {
-            return std::unexpected(domain::FsError{.kind = domain::FsError::Kind::PermissionDenied, .path = path.value(), .detail = {}});
+            return std::unexpected(domain::FsError{.kind = domain::FsError::Kind::PermissionDenied,
+                                                   .path = path.value(),
+                                                   .detail = {}});
         }
         return std::vector<domain::FileEntry>{
-            {.name = "z.txt", .path = "/z.txt", .kind = domain::EntryKind::File, .size = 1, .modified = {}},
-            {.name = "dir", .path = "/dir", .kind = domain::EntryKind::Directory, .size = {}, .modified = {}},
+            {.name = "z.txt",
+             .path = "/z.txt",
+             .kind = domain::EntryKind::File,
+             .size = 1,
+             .modified = {}},
+            {.name = "dir",
+             .path = "/dir",
+             .kind = domain::EntryKind::Directory,
+             .size = {},
+             .modified = {}},
         };
     }
 };

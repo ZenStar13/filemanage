@@ -8,9 +8,8 @@ namespace fm::domain {
 namespace {
 
 bool lessCaseInsensitive(const std::string& a, const std::string& b) {
-    return std::ranges::lexicographical_compare(a, b, [](unsigned char x, unsigned char y) {
-        return std::tolower(x) < std::tolower(y);
-    });
+    return std::ranges::lexicographical_compare(
+        a, b, [](unsigned char x, unsigned char y) { return std::tolower(x) < std::tolower(y); });
 }
 
 /// Domain rule: folders first, then case-insensitive name, then exact name.

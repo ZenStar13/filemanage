@@ -33,14 +33,12 @@ pub fn show(ui: &mut egui::Ui, vm: &BrowserViewModel) -> Vec<Intent> {
         .frame(Frame::new().fill(palette::SURFACE).inner_margin(Margin::symmetric(12, 0)))
         .show(ui, |ui| toolbar::show(ui, vm, &mut intents));
 
-    CentralPanel::default()
-        .frame(Frame::new().fill(palette::BACKGROUND))
-        .show(ui, |ui| {
-            if let Some(error) = vm.error() {
-                toolbar::error_banner(ui, &error.to_string(), &mut intents);
-            }
-            file_table::show(ui, vm, &mut intents);
-        });
+    CentralPanel::default().frame(Frame::new().fill(palette::BACKGROUND)).show(ui, |ui| {
+        if let Some(error) = vm.error() {
+            toolbar::error_banner(ui, &error.to_string(), &mut intents);
+        }
+        file_table::show(ui, vm, &mut intents);
+    });
 
     intents
 }

@@ -4,9 +4,9 @@ use iced::alignment::Vertical;
 use iced::widget::{container, row, space, text};
 use iced::{Element, Fill, Length};
 
+use crate::browser::Browser;
 use crate::browser::message::Message;
 use crate::browser::state::Phase;
-use crate::browser::Browser;
 use crate::theme::{palette, style};
 
 pub fn view(browser: &Browser) -> Element<'_, Message> {

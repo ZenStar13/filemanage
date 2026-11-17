@@ -14,7 +14,7 @@ namespace fm::presentation {
 /// on disk I/O. Every request carries a ticket; only the newest result is
 /// kept, so stale responses from superseded navigations are dropped.
 class DirectoryLoader {
-public:
+  public:
     using Result = std::expected<domain::DirectoryListing, domain::FsError>;
 
     struct Completed {
@@ -28,7 +28,7 @@ public:
     /// Non-blocking: returns the latest completed load, if any.
     [[nodiscard]] std::optional<Completed> poll();
 
-private:
+  private:
     struct Inbox {
         std::mutex mutex;
         std::optional<Completed> latest;

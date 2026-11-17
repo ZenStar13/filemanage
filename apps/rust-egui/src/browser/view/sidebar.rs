@@ -22,14 +22,32 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
         let painter = ui.painter();
         let radius = CornerRadius::same(8);
         if active {
-            painter.rect(rect, radius, palette::PURPLE_MUTED, Stroke::new(1.0, palette::PURPLE), StrokeKind::Inside);
+            painter.rect(
+                rect,
+                radius,
+                palette::PURPLE_MUTED,
+                Stroke::new(1.0, palette::PURPLE),
+                StrokeKind::Inside,
+            );
         } else if hovered {
             painter.rect_filled(rect, radius, palette::SURFACE_RAISED);
         }
         let body = egui::FontId::proportional(size::FONT_BODY);
         let text_color = if hovered && !active { palette::AQUA } else { palette::TEXT_PRIMARY };
-        painter.text(rect.left_center() + vec2(10.0, 0.0), Align2::LEFT_CENTER, glyphs::for_place(place.kind), body.clone(), palette::AQUA);
-        painter.text(rect.left_center() + vec2(36.0, 0.0), Align2::LEFT_CENTER, &place.label, body, text_color);
+        painter.text(
+            rect.left_center() + vec2(10.0, 0.0),
+            Align2::LEFT_CENTER,
+            glyphs::for_place(place.kind),
+            body.clone(),
+            palette::AQUA,
+        );
+        painter.text(
+            rect.left_center() + vec2(36.0, 0.0),
+            Align2::LEFT_CENTER,
+            &place.label,
+            body,
+            text_color,
+        );
         if response.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
             intents.push(Intent::Open(place.path.clone()));
         }

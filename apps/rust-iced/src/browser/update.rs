@@ -111,10 +111,7 @@ impl Browser {
         if entries.is_empty() {
             return;
         }
-        let current = self
-            .selected
-            .as_ref()
-            .and_then(|s| entries.iter().position(|e| &e.path == s));
+        let current = self.selected.as_ref().and_then(|s| entries.iter().position(|e| &e.path == s));
         let last = entries.len() - 1;
         let next = match current {
             None => 0,
@@ -130,7 +127,8 @@ mod tests {
 
     use fm_core::application::{BrowseDirectory, ListPlaces};
     use fm_core::domain::{
-        DirectoryListing, EntryKind, FileEntry, FileSystemRepository, FsError, Place, PlaceKind, PlacesProvider,
+        DirectoryListing, EntryKind, FileEntry, FileSystemRepository, FsError, Place, PlaceKind,
+        PlacesProvider,
     };
 
     use super::*;
@@ -169,7 +167,8 @@ mod tests {
     }
 
     fn browser() -> Browser {
-        let (browser, _) = Browser::new(BrowseDirectory::new(Arc::new(NoFs)), &ListPlaces::new(Arc::new(Places)));
+        let (browser, _) =
+            Browser::new(BrowseDirectory::new(Arc::new(NoFs)), &ListPlaces::new(Arc::new(Places)));
         browser
     }
 

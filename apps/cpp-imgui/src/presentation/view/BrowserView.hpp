@@ -10,12 +10,12 @@ namespace fm::presentation {
 /// Root view: lays out sidebar, toolbar, table and status bar and binds
 /// global keyboard shortcuts. Returns the actions gathered this frame.
 class BrowserView {
-public:
+  public:
     explicit BrowserView(Fonts fonts) : fonts_(fonts) {}
 
     [[nodiscard]] ActionQueue draw(const BrowserViewModel& vm);
 
-private:
+  private:
     static void bindShortcuts(ActionQueue& actions);
 
     Fonts fonts_;

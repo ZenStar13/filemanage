@@ -16,21 +16,17 @@ struct ExtensionIcon {
 };
 
 constexpr auto kExtensionIcons = std::to_array<ExtensionIcon>({
-    {"png", "", true}, {"jpg", "", true},  {"jpeg", "", true},
-    {"gif", "", true}, {"svg", "", true},  {"webp", "", true},
-    {"mp3", "", true}, {"flac", "", true}, {"ogg", "", true},
-    {"wav", "", true}, {"mp4", "", true},  {"mkv", "", true},
-    {"webm", "", true}, {"mov", "", true}, {"zip", "", false},
-    {"tar", "", false}, {"gz", "", false}, {"xz", "", false},
-    {"zst", "", false}, {"7z", "", false}, {"deb", "", false},
-    {"pdf", "", false}, {"txt", "", false}, {"md", "", false},
-    {"log", "", false}, {"conf", "", false}, {"ini", "", false},
-    {"cpp", "", false}, {"hpp", "", false}, {"c", "", false},
-    {"h", "", false},   {"rs", "", false},  {"zig", "", false},
-    {"dart", "", false}, {"py", "", false}, {"js", "", false},
-    {"ts", "", false},  {"sh", "", false},  {"json", "", false},
-    {"toml", "", false}, {"yaml", "", false}, {"yml", "", false},
-    {"html", "", false}, {"css", "", false},
+    {"png", "", true},   {"jpg", "", true},   {"jpeg", "", true},  {"gif", "", true},
+    {"svg", "", true},   {"webp", "", true},  {"mp3", "", true},   {"flac", "", true},
+    {"ogg", "", true},   {"wav", "", true},   {"mp4", "", true},   {"mkv", "", true},
+    {"webm", "", true},  {"mov", "", true},   {"zip", "", false},  {"tar", "", false},
+    {"gz", "", false},   {"xz", "", false},   {"zst", "", false},  {"7z", "", false},
+    {"deb", "", false},  {"pdf", "", false},  {"txt", "", false},  {"md", "", false},
+    {"log", "", false},  {"conf", "", false}, {"ini", "", false},  {"cpp", "", false},
+    {"hpp", "", false},  {"c", "", false},    {"h", "", false},    {"rs", "", false},
+    {"zig", "", false},  {"dart", "", false}, {"py", "", false},   {"js", "", false},
+    {"ts", "", false},   {"sh", "", false},   {"json", "", false}, {"toml", "", false},
+    {"yaml", "", false}, {"yml", "", false},  {"html", "", false}, {"css", "", false},
 });
 
 } // namespace
@@ -60,14 +56,22 @@ Icon forEntry(const domain::FileEntry& entry) {
 const char* forPlace(domain::PlaceKind kind) {
     using domain::PlaceKind;
     switch (kind) {
-    case PlaceKind::Home: return "";
-    case PlaceKind::Desktop: return "";
-    case PlaceKind::Documents: return "";
-    case PlaceKind::Downloads: return "";
-    case PlaceKind::Pictures: return "";
-    case PlaceKind::Music: return "";
-    case PlaceKind::Videos: return "";
-    case PlaceKind::Root: return "";
+    case PlaceKind::Home:
+        return "";
+    case PlaceKind::Desktop:
+        return "";
+    case PlaceKind::Documents:
+        return "";
+    case PlaceKind::Downloads:
+        return "";
+    case PlaceKind::Pictures:
+        return "";
+    case PlaceKind::Music:
+        return "";
+    case PlaceKind::Videos:
+        return "";
+    case PlaceKind::Root:
+        return "";
     }
     return kFolder;
 }

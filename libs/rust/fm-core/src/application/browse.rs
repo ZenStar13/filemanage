@@ -40,8 +40,20 @@ mod tests {
                 return Err(FsError::PermissionDenied(path.as_path().into()));
             }
             Ok(vec![
-                FileEntry { name: "z.txt".into(), path: "/z.txt".into(), kind: EntryKind::File, size: Some(1), modified: None },
-                FileEntry { name: "dir".into(), path: "/dir".into(), kind: EntryKind::Directory, size: None, modified: None },
+                FileEntry {
+                    name: "z.txt".into(),
+                    path: "/z.txt".into(),
+                    kind: EntryKind::File,
+                    size: Some(1),
+                    modified: None,
+                },
+                FileEntry {
+                    name: "dir".into(),
+                    path: "/dir".into(),
+                    kind: EntryKind::Directory,
+                    size: None,
+                    modified: None,
+                },
             ])
         }
     }

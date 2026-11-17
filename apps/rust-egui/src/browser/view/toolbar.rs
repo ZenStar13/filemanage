@@ -37,7 +37,8 @@ fn hidden_toggle(ui: &mut Ui, active: bool, intents: &mut Vec<Intent>) {
     } else {
         (glyphs::EYE_SLASH, palette::AQUA, palette::SURFACE_RAISED)
     };
-    let button = Button::new(RichText::new(glyph).color(text).size(size::FONT_BODY)).fill(fill).min_size(TOOL_SIZE);
+    let button =
+        Button::new(RichText::new(glyph).color(text).size(size::FONT_BODY)).fill(fill).min_size(TOOL_SIZE);
     if ui.add(button).on_hover_text("Show hidden files (Ctrl+H)").clicked() {
         intents.push(Intent::ToggleHidden);
     }
@@ -54,7 +55,8 @@ fn breadcrumbs(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
                     ui.label(RichText::new(glyphs::CHEVRON_RIGHT).color(palette::PURPLE).size(11.0));
                 }
                 let color = if index == last { palette::GOLD } else { palette::TEXT_PRIMARY };
-                let crumb = Button::new(RichText::new(&segment.label).color(color)).frame_when_inactive(false);
+                let crumb =
+                    Button::new(RichText::new(&segment.label).color(color)).frame_when_inactive(false);
                 if ui.add(crumb).clicked() {
                     intents.push(Intent::Open(segment.path));
                 }

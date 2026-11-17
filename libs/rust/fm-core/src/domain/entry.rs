@@ -7,7 +7,9 @@ pub enum EntryKind {
     Directory,
     File,
     /// A symbolic link; `target_is_dir` tells whether it can be entered.
-    Symlink { target_is_dir: bool },
+    Symlink {
+        target_is_dir: bool,
+    },
     /// Sockets, FIFOs, device nodes, broken metadata...
     Other,
 }
@@ -31,10 +33,7 @@ impl FileEntry {
 
     /// Whether the user can navigate *into* this entry.
     pub fn is_navigable(&self) -> bool {
-        matches!(
-            self.kind,
-            EntryKind::Directory | EntryKind::Symlink { target_is_dir: true }
-        )
+        matches!(self.kind, EntryKind::Directory | EntryKind::Symlink { target_is_dir: true })
     }
 
     /// Lower-cased extension, used to pick icons and type labels.
@@ -42,8 +41,6 @@ impl FileEntry {
         if self.is_navigable() {
             return None;
         }
-        self.path
-            .extension()
-            .map(|ext| ext.to_string_lossy().to_lowercase())
+        self.path.extension().map(|ext| ext.to_string_lossy().to_lowercase())
     }
 }

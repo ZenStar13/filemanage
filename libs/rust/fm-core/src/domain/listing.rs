@@ -60,9 +60,7 @@ impl DirectoryListing {
 
     /// Entries filtered by the requested visibility.
     pub fn visible(&self, visibility: Visibility) -> impl Iterator<Item = &FileEntry> {
-        self.entries
-            .iter()
-            .filter(move |e| visibility.shows_hidden() || !e.is_hidden())
+        self.entries.iter().filter(move |e| visibility.shows_hidden() || !e.is_hidden())
     }
 
     pub fn summary(&self, visibility: Visibility) -> ListingSummary {

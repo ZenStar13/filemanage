@@ -12,9 +12,9 @@ ActionQueue BrowserView::draw(const BrowserViewModel& vm) {
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
 
-    constexpr ImGuiWindowFlags kRootFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
-                                            ImGuiWindowFlags_NoSavedSettings |
-                                            ImGuiWindowFlags_NoBringToFrontOnFocus;
+    constexpr ImGuiWindowFlags kRootFlags =
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoBringToFrontOnFocus;
     if (ImGui::Begin("##browser", nullptr, kRootFlags)) {
         bindShortcuts(actions);
 
@@ -61,7 +61,8 @@ void BrowserView::bindShortcuts(ActionQueue& actions) {
     if (ImGui::Shortcut(ImGuiKey_DownArrow, kRepeat)) {
         actions.emplace_back(action::MoveSelection{1});
     }
-    if (ImGui::Shortcut(ImGuiKey_Enter, kGlobal) || ImGui::Shortcut(ImGuiKey_KeypadEnter, kGlobal)) {
+    if (ImGui::Shortcut(ImGuiKey_Enter, kGlobal) ||
+        ImGui::Shortcut(ImGuiKey_KeypadEnter, kGlobal)) {
         actions.emplace_back(action::ActivateSelection{});
     }
     if (ImGui::Shortcut(ImGuiKey_Escape, kGlobal)) {

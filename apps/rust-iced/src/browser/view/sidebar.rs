@@ -3,8 +3,8 @@ use fm_ui_kit::tokens::{layout, size, spacing};
 use iced::widget::{Column, button, container, row, text};
 use iced::{Element, Fill, Length};
 
-use crate::browser::message::{Message, Navigation};
 use crate::browser::Browser;
+use crate::browser::message::{Message, Navigation};
 use crate::theme::{font, palette, style};
 
 pub fn view(browser: &Browser) -> Element<'_, Message> {

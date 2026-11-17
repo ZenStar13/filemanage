@@ -22,7 +22,7 @@ struct FileEntry {
     std::string name;
     std::filesystem::path path;
     EntryKind kind{EntryKind::Other};
-    std::optional<std::uintmax_t> size;                           ///< regular files only
+    std::optional<std::uintmax_t> size; ///< regular files only
     std::optional<std::chrono::system_clock::time_point> modified;
 
     /// Unix convention: dot-files are hidden.

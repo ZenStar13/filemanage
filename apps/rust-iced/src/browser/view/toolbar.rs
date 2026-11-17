@@ -4,15 +4,23 @@ use iced::alignment::Vertical;
 use iced::widget::{Row, button, container, row, text, tooltip};
 use iced::{Element, Fill, Length};
 
-use crate::browser::message::{Message, Navigation};
 use crate::browser::Browser;
+use crate::browser::message::{Message, Navigation};
 use crate::theme::{palette, style};
 
 pub fn view(browser: &Browser) -> Element<'_, Message> {
     let history = &browser.history;
     let nav = row![
-        tool(glyphs::BACK, "Back (Alt+←)", history.can_go_back().then_some(Message::Navigate(Navigation::Back))),
-        tool(glyphs::FORWARD, "Forward (Alt+→)", history.can_go_forward().then_some(Message::Navigate(Navigation::Forward))),
+        tool(
+            glyphs::BACK,
+            "Back (Alt+←)",
+            history.can_go_back().then_some(Message::Navigate(Navigation::Back))
+        ),
+        tool(
+            glyphs::FORWARD,
+            "Forward (Alt+→)",
+            history.can_go_forward().then_some(Message::Navigate(Navigation::Forward))
+        ),
         tool(glyphs::UP, "Up (Backspace)", history.can_go_up().then_some(Message::Navigate(Navigation::Up))),
         tool(glyphs::REFRESH, "Refresh (F5)", Some(Message::Navigate(Navigation::Refresh))),
     ]

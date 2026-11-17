@@ -9,8 +9,10 @@ namespace fm::presentation::view {
 void drawSidebar(const BrowserViewModel& vm, ActionQueue& actions, const Fonts& fonts) {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, palette::kSurface);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {dimens::kSm, dimens::kSm});
-    ImGui::BeginChild("##sidebar", {dimens::kSidebarWidth, ImGui::GetContentRegionAvail().y - dimens::kStatusBarHeight},
-                      ImGuiChildFlags_AlwaysUseWindowPadding);
+    ImGui::BeginChild(
+        "##sidebar",
+        {dimens::kSidebarWidth, ImGui::GetContentRegionAvail().y - dimens::kStatusBarHeight},
+        ImGuiChildFlags_AlwaysUseWindowPadding);
 
     ImGui::Dummy({0, dimens::kXs});
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + dimens::kSm);
@@ -42,16 +44,20 @@ void drawSidebar(const BrowserViewModel& vm, ActionQueue& actions, const Fonts& 
         ImDrawList* draw = ImGui::GetWindowDrawList();
         const ImVec2 end{start.x + size.x, start.y + size.y};
         if (active) {
-            draw->AddRectFilled(start, end, ImGui::GetColorU32(palette::kPurpleMuted), dimens::kRadiusMd);
+            draw->AddRectFilled(start, end, ImGui::GetColorU32(palette::kPurpleMuted),
+                                dimens::kRadiusMd);
             draw->AddRect(start, end, ImGui::GetColorU32(palette::kPurple), dimens::kRadiusMd);
         } else if (hovered) {
-            draw->AddRectFilled(start, end, ImGui::GetColorU32(palette::kSurfaceRaised), dimens::kRadiusMd);
+            draw->AddRectFilled(start, end, ImGui::GetColorU32(palette::kSurfaceRaised),
+                                dimens::kRadiusMd);
         }
         const float textY = start.y + (size.y - ImGui::GetFontSize()) / 2;
-        draw->AddText({start.x + dimens::kSm, textY}, ImGui::GetColorU32(palette::kAqua), glyphs::forPlace(place.kind));
-        draw->AddText({start.x + dimens::kSm + 26, textY},
-                      ImGui::GetColorU32(hovered && !active ? palette::kAqua : palette::kTextPrimary),
-                      place.label.c_str());
+        draw->AddText({start.x + dimens::kSm, textY}, ImGui::GetColorU32(palette::kAqua),
+                      glyphs::forPlace(place.kind));
+        draw->AddText(
+            {start.x + dimens::kSm + 26, textY},
+            ImGui::GetColorU32(hovered && !active ? palette::kAqua : palette::kTextPrimary),
+            place.label.c_str());
     }
     ImGui::PopStyleVar(2);
 

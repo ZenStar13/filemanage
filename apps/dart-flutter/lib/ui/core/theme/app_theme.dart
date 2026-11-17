@@ -7,6 +7,12 @@ import 'dimens.dart';
 abstract final class AppTheme {
   static const fontFamily = '0xProto Nerd Font';
 
+  static final _toolForeground = WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.disabled)
+        ? AppColors.border
+        : AppColors.aqua,
+  );
+
   static ThemeData get dark {
     const scheme = ColorScheme.dark(
       primary: AppColors.aqua,
@@ -61,11 +67,10 @@ abstract final class AppTheme {
       ),
       iconButtonTheme: IconButtonThemeData(
         style: ButtonStyle(
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.disabled)
-                ? AppColors.border
-                : AppColors.aqua,
-          ),
+          // Material 3 colours icons via `iconColor`; set both so the
+          // glyph (which reads the ambient IconTheme) dims when disabled.
+          foregroundColor: _toolForeground,
+          iconColor: _toolForeground,
           backgroundColor: WidgetStateProperty.resolveWith(
             (states) => states.contains(WidgetState.hovered)
                 ? AppColors.purpleMuted

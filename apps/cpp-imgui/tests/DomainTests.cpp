@@ -8,7 +8,9 @@ using namespace fm::domain;
 
 namespace {
 
-DirectoryPath path(const char* raw) { return *DirectoryPath::from(raw); }
+DirectoryPath path(const char* raw) {
+    return *DirectoryPath::from(raw);
+}
 
 FileEntry entry(const std::string& name, EntryKind kind) {
     return {.name = name, .path = "/t/" + name, .kind = kind, .size = 10, .modified = std::nullopt};
@@ -46,10 +48,11 @@ TEST_CASE("NavigationHistory supports back/forward and clears forward on visit")
 }
 
 TEST_CASE("DirectoryListing sorts folders first and filters hidden entries") {
-    const DirectoryListing listing{path("/t"),
-                                   {entry("b.txt", EntryKind::File), entry("Zeta", EntryKind::Directory),
-                                    entry("A.txt", EntryKind::File), entry("alpha", EntryKind::Directory),
-                                    entry(".env", EntryKind::File)}};
+    const DirectoryListing listing{
+        path("/t"),
+        {entry("b.txt", EntryKind::File), entry("Zeta", EntryKind::Directory),
+         entry("A.txt", EntryKind::File), entry("alpha", EntryKind::Directory),
+         entry(".env", EntryKind::File)}};
     const auto visible = listing.visible(Visibility::HideHidden);
     REQUIRE(visible.size() == 4);
     CHECK(visible[0]->name == "alpha");

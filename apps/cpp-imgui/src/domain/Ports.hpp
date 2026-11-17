@@ -12,7 +12,7 @@ namespace fm::domain {
 
 /// Port: read access to a hierarchical filesystem.
 class FileSystemRepository {
-public:
+  public:
     FileSystemRepository() = default;
     FileSystemRepository(const FileSystemRepository&) = delete;
     FileSystemRepository& operator=(const FileSystemRepository&) = delete;
@@ -27,7 +27,7 @@ public:
 
 /// Port: the user's well-known locations.
 class PlacesProvider {
-public:
+  public:
     PlacesProvider() = default;
     PlacesProvider(const PlacesProvider&) = delete;
     PlacesProvider& operator=(const PlacesProvider&) = delete;

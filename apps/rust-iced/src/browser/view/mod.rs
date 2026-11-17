@@ -16,10 +16,6 @@ impl Browser {
     pub fn view(&self) -> Element<'_, Message> {
         let main = column![toolbar::view(self), file_list::view(self)];
         let body = row![sidebar::view(self), main.width(Fill)].height(Fill);
-        container(column![body, status_bar::view(self)])
-            .style(style::content)
-            .width(Fill)
-            .height(Fill)
-            .into()
+        container(column![body, status_bar::view(self)]).style(style::content).width(Fill).height(Fill).into()
     }
 }

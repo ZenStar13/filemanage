@@ -26,7 +26,7 @@ struct ListingSummary {
 /// Aggregate: the content of one directory, kept in canonical browse order
 /// (folders first, then case-insensitive name). The ordering is a domain rule.
 class DirectoryListing {
-public:
+  public:
     DirectoryListing(DirectoryPath path, std::vector<FileEntry> entries);
 
     [[nodiscard]] const DirectoryPath& path() const noexcept { return path_; }
@@ -34,7 +34,7 @@ public:
     [[nodiscard]] std::vector<const FileEntry*> visible(Visibility visibility) const;
     [[nodiscard]] ListingSummary summary(Visibility visibility) const;
 
-private:
+  private:
     DirectoryPath path_;
     std::vector<FileEntry> entries_;
 };

@@ -1,0 +1,23 @@
+.{
+    .name = .fm_clay,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.17.1",
+    .fingerprint = 0x46421be8ddd52ab0,
+    .dependencies = .{
+        // Idiomatic Zig bindings for Clay (bundles clay v0.14 + a raylib renderer).
+        .zclay = .{
+            .url = "git+https://github.com/johan0A/clay-zig-bindings#91514802a0344c6160920f07cc776c97f337a7c7",
+            .hash = "zclay-0.2.2-Ej1rkBz-AABWAwI9WAfund-LNyi3CN9WjIwW3bKd7Ola",
+        },
+        // raylib (windowing, input, GPU drawing) with Zig bindings.
+        .raylib_zig = .{
+            .url = "git+https://github.com/raylib-zig/raylib-zig#28bbe30112f605da918db00eff53a75ce1aa9180",
+            .hash = "raylib_zig-6.2.0-KE8RELGmBQDX1v1DqBN57pNxJ-b-MIa1S-M7NXT9Eplr",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

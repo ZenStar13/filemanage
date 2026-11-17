@@ -62,12 +62,14 @@ fn for_extension(ext: Option<&str>) -> (&'static str, IconTone) {
         Some("png" | "jpg" | "jpeg" | "gif" | "svg" | "webp" | "bmp") => (FILE_IMAGE, IconTone::Highlight),
         Some("mp3" | "flac" | "ogg" | "wav" | "m4a") => (FILE_AUDIO, IconTone::Highlight),
         Some("mp4" | "mkv" | "webm" | "avi" | "mov") => (FILE_VIDEO, IconTone::Highlight),
-        Some("zip" | "tar" | "gz" | "xz" | "zst" | "bz2" | "7z" | "rar" | "deb" | "rpm") => (FILE_ARCHIVE, IconTone::Neutral),
+        Some("zip" | "tar" | "gz" | "xz" | "zst" | "bz2" | "7z" | "rar" | "deb" | "rpm") => {
+            (FILE_ARCHIVE, IconTone::Neutral)
+        }
         Some("pdf") => (FILE_PDF, IconTone::Neutral),
         Some("txt" | "md" | "log" | "conf" | "ini" | "cfg") => (FILE_TEXT, IconTone::Neutral),
         Some(
-            "rs" | "c" | "h" | "cpp" | "hpp" | "zig" | "dart" | "py" | "js" | "ts" | "sh" | "json"
-            | "toml" | "yaml" | "yml" | "html" | "css",
+            "rs" | "c" | "h" | "cpp" | "hpp" | "zig" | "dart" | "py" | "js" | "ts" | "sh" | "json" | "toml"
+            | "yaml" | "yml" | "html" | "css",
         ) => (FILE_CODE, IconTone::Neutral),
         _ => (FILE, IconTone::Neutral),
     }

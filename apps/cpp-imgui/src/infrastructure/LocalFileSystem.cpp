@@ -36,7 +36,8 @@ domain::FileEntry toEntry(const fs::directory_entry& entry) {
 
     // symlink_status does not follow links; status does (to learn the target).
     if (entry.is_symlink(ec)) {
-        result.kind = entry.is_directory(ec) ? EntryKind::SymlinkToDirectory : EntryKind::SymlinkToFile;
+        result.kind =
+            entry.is_directory(ec) ? EntryKind::SymlinkToDirectory : EntryKind::SymlinkToFile;
     } else if (entry.is_directory(ec)) {
         result.kind = EntryKind::Directory;
     } else if (entry.is_regular_file(ec)) {

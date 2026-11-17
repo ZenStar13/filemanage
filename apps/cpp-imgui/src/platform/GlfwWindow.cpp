@@ -2,12 +2,11 @@
 
 #include "presentation/theme/Palette.hpp"
 
+#include <GLFW/glfw3.h>
+#include <cstdio>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <GLFW/glfw3.h>
-
-#include <cstdio>
 #include <stdexcept>
 
 namespace fm::platform {
@@ -15,7 +14,8 @@ namespace fm::platform {
 namespace {
 
 void onGlfwError(int code, const char* description) {
-    std::fprintf(stderr, "GLFW error %d: %s\n", code, description); // NOLINT(cppcoreguidelines-pro-type-vararg)
+    std::fprintf(stderr, "GLFW error %d: %s\n", code,
+                 description); // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 } // namespace
@@ -58,9 +58,15 @@ GlfwWindow::~GlfwWindow() {
     glfwTerminate();
 }
 
-bool GlfwWindow::shouldClose() const { return glfwWindowShouldClose(window_) != 0; }
+bool GlfwWindow::shouldClose() const {
+    return glfwWindowShouldClose(window_) != 0;
+}
 
-void GlfwWindow::waitEvents(double timeoutSeconds) const { glfwWaitEventsTimeout(timeoutSeconds); }
+bool GlfwWindow::waitEvents(double timeoutSeconds) const {
+    const double start = glfwGetTime();
+    glfwWaitEventsTimeout(timeoutSeconds);
+    return glfwGetTime() - start < timeoutSeconds * 0.9;
+}
 
 void GlfwWindow::beginFrame() const {
     ImGui_ImplOpenGL3_NewFrame();

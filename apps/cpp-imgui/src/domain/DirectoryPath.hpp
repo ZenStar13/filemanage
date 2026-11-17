@@ -12,7 +12,7 @@ struct PathSegment;
 /// Value object: an absolute, normalised directory location.
 /// The invariant (absolute path) is enforced by the only factory, `from`.
 class DirectoryPath {
-public:
+  public:
     [[nodiscard]] static std::optional<DirectoryPath> from(const std::filesystem::path& raw);
     [[nodiscard]] static DirectoryPath root();
 
@@ -25,7 +25,7 @@ public:
 
     friend bool operator==(const DirectoryPath&, const DirectoryPath&) = default;
 
-private:
+  private:
     explicit DirectoryPath(std::filesystem::path path) : path_(std::move(path)) {}
 
     std::filesystem::path path_;

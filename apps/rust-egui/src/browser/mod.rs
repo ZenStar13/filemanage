@@ -5,8 +5,8 @@
 //! * [`view`]       – immediate-mode views: read state, emit intents.
 
 mod intent;
-mod view_model;
 pub mod view;
+mod view_model;
 
 pub use intent::Intent;
 pub use view_model::BrowserViewModel;

@@ -4,7 +4,9 @@
 use std::sync::Arc;
 
 use egui::epaint::Shadow;
-use egui::{Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals};
+use egui::{
+    Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals,
+};
 use fm_ui_kit::glyphs::IconTone;
 use fm_ui_kit::tokens::{Rgb, color, radius, size, spacing};
 

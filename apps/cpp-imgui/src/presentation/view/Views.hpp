@@ -18,10 +18,10 @@ void drawErrorBanner(const domain::FsError& error, ActionQueue& actions);
 /// The file table keeps a tiny bit of *ephemeral* view state (which keyboard
 /// selection it already scrolled to), which is why it is a class.
 class FileTable {
-public:
+  public:
     void draw(const BrowserViewModel& vm, ActionQueue& actions, const Fonts& fonts);
 
-private:
+  private:
     std::uint64_t revealedRevision_{0};
 };
 

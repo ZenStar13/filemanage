@@ -13,7 +13,8 @@ Application::Application(Services services, std::filesystem::path assetDir)
     : services_(std::move(services)), assetDir_(std::move(assetDir)) {}
 
 int Application::run() {
-    const platform::GlfwWindow window{{.title = "Files (Dear ImGui)", .width = 1100, .height = 700}};
+    const platform::GlfwWindow window{
+        {.title = "Files (Dear ImGui)", .width = 1100, .height = 700}};
 
     presentation::applyTheme();
     ImGui::GetStyle().ScaleAllSizes(window.contentScale());
@@ -23,12 +24,14 @@ int Application::run() {
     presentation::BrowserViewModel viewModel{services_.browse, services_.places};
     presentation::BrowserView view{fonts};
 
-    // A few frames after any input are rendered eagerly so hover/press
-    // animations settle; otherwise we sleep until the next event.
-    int eagerFrames = 2;
+    // Dear ImGui spreads queued input events over several frames ("input
+    // trickling"), so after any OS event we render a short burst at 60 FPS;
+    // otherwise we sleep until the next event (or poll while loading).
+    constexpr int kBurstFrames = 20;
+    int burst = kBurstFrames;
     while (!window.shouldClose()) {
-        window.waitEvents(viewModel.isLoading() || eagerFrames > 0 ? 1.0 / 60.0 : 0.5);
-        eagerFrames = ImGui::GetIO().InputQueueCharacters.empty() && !ImGui::IsAnyItemHovered() ? eagerFrames - 1 : 2;
+        const bool busy = burst > 0 || viewModel.isLoading();
+        burst = window.waitEvents(busy ? 1.0 / 60.0 : 0.5) ? kBurstFrames : burst - 1;
 
         viewModel.tick();
         window.beginFrame();

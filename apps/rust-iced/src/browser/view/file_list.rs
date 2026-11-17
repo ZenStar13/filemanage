@@ -1,14 +1,14 @@
 use fm_core::domain::FileEntry;
-use fm_ui_kit::{format, glyphs};
 use fm_ui_kit::tokens::{layout, size, spacing};
+use fm_ui_kit::{format, glyphs};
 use iced::alignment::{Horizontal, Vertical};
-use iced::widget::{Column, button, center, container, mouse_area, row, scrollable, text};
 use iced::widget::text::Wrapping;
+use iced::widget::{Column, button, center, container, mouse_area, row, scrollable, text};
 use iced::{Element, Fill, FillPortion, Length, mouse};
 
+use crate::browser::Browser;
 use crate::browser::message::Message;
 use crate::browser::state::Phase;
-use crate::browser::Browser;
 use crate::theme::{font, palette, style};
 
 const SIZE_WIDTH: f32 = 110.0;
@@ -87,7 +87,11 @@ fn entry_row<'a>(browser: &Browser, entry: &'a FileEntry) -> Element<'a, Message
         .on_double_click(Message::Activate(entry.path.clone()))
         .on_enter(Message::HoverEnter(entry.path.clone()))
         .on_exit(Message::HoverExit(entry.path.clone()))
-        .interaction(if entry.is_navigable() { mouse::Interaction::Pointer } else { mouse::Interaction::default() })
+        .interaction(if entry.is_navigable() {
+            mouse::Interaction::Pointer
+        } else {
+            mouse::Interaction::default()
+        })
         .into()
 }
 

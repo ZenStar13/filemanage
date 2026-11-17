@@ -63,10 +63,7 @@ impl Browser {
 
     /// Entries the user can currently see, in browse order.
     pub(super) fn visible_entries(&self) -> Vec<&FileEntry> {
-        self.listing
-            .as_ref()
-            .map(|l| l.visible(self.visibility).collect())
-            .unwrap_or_default()
+        self.listing.as_ref().map(|l| l.visible(self.visibility).collect()).unwrap_or_default()
     }
 
     pub(super) fn entry(&self, path: &PathBuf) -> Option<&FileEntry> {

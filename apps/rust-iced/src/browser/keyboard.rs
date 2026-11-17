@@ -1,5 +1,5 @@
-use iced::keyboard::{self, Key, key::Named};
 use iced::Subscription;
+use iced::keyboard::{self, Key, key::Named};
 
 use super::message::{Message, Navigation};
 

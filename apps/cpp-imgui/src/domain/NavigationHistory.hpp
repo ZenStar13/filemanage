@@ -11,7 +11,7 @@ namespace fm::domain {
 /// stacks. Navigation is two-phase: peek a destination, load it, and only
 /// commit on success, so failed loads never corrupt history.
 class NavigationHistory {
-public:
+  public:
     explicit NavigationHistory(DirectoryPath start) : current_(std::move(start)) {}
 
     [[nodiscard]] const DirectoryPath& current() const noexcept { return current_; }
@@ -25,7 +25,7 @@ public:
     bool goBack();
     bool goForward();
 
-private:
+  private:
     DirectoryPath current_;
     std::vector<DirectoryPath> back_;
     std::vector<DirectoryPath> forward_;

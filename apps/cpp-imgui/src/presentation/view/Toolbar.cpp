@@ -3,7 +3,6 @@
 #include "presentation/view/Views.hpp"
 
 #include <imgui.h>
-
 #include <string>
 
 namespace fm::presentation::view {
@@ -61,9 +60,10 @@ void breadcrumbs(const BrowserViewModel& vm, ActionQueue& actions) {
 
 void drawToolbar(const BrowserViewModel& vm, ActionQueue& actions) {
     ImGui::PushStyleColor(ImGuiCol_ChildBg, palette::kSurface);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {dimens::kMd, (dimens::kToolbarHeight - kToolButtonSize.y) / 2});
-    ImGui::BeginChild("##toolbar", {0, dimens::kToolbarHeight}, ImGuiChildFlags_AlwaysUseWindowPadding,
-                      ImGuiWindowFlags_NoScrollbar);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
+                        {dimens::kMd, (dimens::kToolbarHeight - kToolButtonSize.y) / 2});
+    ImGui::BeginChild("##toolbar", {0, dimens::kToolbarHeight},
+                      ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar);
 
     if (toolButton(glyphs::kBack, "Back (Alt+←)", vm.canGoBack())) {
         actions.emplace_back(action::GoBack{});
@@ -85,8 +85,8 @@ void drawToolbar(const BrowserViewModel& vm, ActionQueue& actions) {
     breadcrumbs(vm, actions);
 
     ImGui::SameLine(ImGui::GetWindowWidth() - kToolButtonSize.x - dimens::kMd);
-    if (toolButton(vm.showsHidden() ? glyphs::kEye : glyphs::kEyeSlash, "Show hidden files (Ctrl+H)",
-                   true, vm.showsHidden())) {
+    if (toolButton(vm.showsHidden() ? glyphs::kEye : glyphs::kEyeSlash,
+                   "Show hidden files (Ctrl+H)", true, vm.showsHidden())) {
         actions.emplace_back(action::ToggleHidden{});
     }
 
@@ -100,9 +100,11 @@ void drawErrorBanner(const domain::FsError& error, ActionQueue& actions) {
     ImGui::PushStyleColor(ImGuiCol_Border, palette::kDanger);
     ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, dimens::kRadiusMd);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {dimens::kMd, dimens::kSm});
-    ImGui::SetCursorPos({ImGui::GetCursorPosX() + dimens::kSm, ImGui::GetCursorPosY() + dimens::kSm});
+    ImGui::SetCursorPos(
+        {ImGui::GetCursorPosX() + dimens::kSm, ImGui::GetCursorPosY() + dimens::kSm});
     ImGui::BeginChild("##error", {ImGui::GetContentRegionAvail().x - dimens::kSm, 0},
-                      ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysUseWindowPadding);
+                      ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY |
+                          ImGuiChildFlags_AlwaysUseWindowPadding);
     ImGui::AlignTextToFramePadding();
     ImGui::TextColored(palette::kDanger, "%s", glyphs::kWarning);
     ImGui::SameLine();

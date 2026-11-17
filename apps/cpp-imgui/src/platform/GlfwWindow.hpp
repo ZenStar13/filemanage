@@ -9,7 +9,7 @@ namespace fm::platform {
 /// RAII host for a GLFW window, its OpenGL 3 context and the Dear ImGui
 /// context + platform/renderer backends. Non-copyable, non-movable.
 class GlfwWindow {
-public:
+  public:
     struct Options {
         std::string title;
         int width;
@@ -27,11 +27,12 @@ public:
     [[nodiscard]] float contentScale() const { return scale_; }
     /// Blocks until input arrives or `timeoutSeconds` elapse: a file manager
     /// does not need to burn CPU re-rendering at 60 FPS while idle.
-    void waitEvents(double timeoutSeconds) const;
+    /// Returns true when woken up by an event rather than the timeout.
+    [[nodiscard]] bool waitEvents(double timeoutSeconds) const;
     void beginFrame() const;
     void endFrame() const;
 
-private:
+  private:
     GLFWwindow* window_{nullptr};
     float scale_{1.0F};
 };

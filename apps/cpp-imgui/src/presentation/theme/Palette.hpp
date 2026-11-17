@@ -1,8 +1,7 @@
 #pragma once
 
-#include <imgui.h>
-
 #include <cstdint>
+#include <imgui.h>
 
 /// Palette and layout tokens mirrored from `design/tokens.json`.
 namespace fm::presentation::palette {
@@ -52,7 +51,9 @@ inline constexpr float kStatusBarHeight = 26.0F;
 // Dear ImGui sizes fonts by line height (ascent - descent) instead, which for
 // 0xProto is 1.56 em ((1130 + 430) / 1000 units), so we convert once here.
 inline constexpr float kLineHeightPerEm = 1.56F;
-[[nodiscard]] constexpr float fontSize(float em) { return em * kLineHeightPerEm; }
+[[nodiscard]] constexpr float fontSize(float em) {
+    return em * kLineHeightPerEm;
+}
 
 inline constexpr float kFontSmall = fontSize(13.0F);
 inline constexpr float kFontBody = fontSize(15.0F);

@@ -23,7 +23,8 @@ std::string env(const char* name) {
 /// Parses lines like `XDG_DOCUMENTS_DIR="$HOME/Documents"`.
 std::map<std::string, std::string> readUserDirs(const fs::path& home) {
     const auto configHome = env("XDG_CONFIG_HOME");
-    const fs::path file = (configHome.empty() ? home / ".config" : fs::path{configHome}) / "user-dirs.dirs";
+    const fs::path file =
+        (configHome.empty() ? home / ".config" : fs::path{configHome}) / "user-dirs.dirs";
     std::map<std::string, std::string> dirs;
     std::ifstream in{file};
     for (std::string line; std::getline(in, line);) {
@@ -75,10 +76,12 @@ std::vector<Place> XdgPlaces::places() const {
         auto path = DirectoryPath::from(raw);
         // XDG: a user dir equal to $HOME means "disabled".
         if (path && *path != homeDir && fs::is_directory(raw, ec)) {
-            result.push_back(Place{.kind = kind, .label = std::string{label}, .path = std::move(*path)});
+            result.push_back(
+                Place{.kind = kind, .label = std::string{label}, .path = std::move(*path)});
         }
     }
-    result.push_back(Place{.kind = PlaceKind::Root, .label = "File System", .path = DirectoryPath::root()});
+    result.push_back(
+        Place{.kind = PlaceKind::Root, .label = "File System", .path = DirectoryPath::root()});
     return result;
 }
 

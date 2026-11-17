@@ -14,13 +14,17 @@ std::optional<DirectoryPath> DirectoryPath::from(const std::filesystem::path& ra
     return DirectoryPath{std::move(normal)};
 }
 
-DirectoryPath DirectoryPath::root() { return DirectoryPath{"/"}; }
+DirectoryPath DirectoryPath::root() {
+    return DirectoryPath{"/"};
+}
 
 std::string DirectoryPath::name() const {
     return isRoot() ? path_.string() : path_.filename().string();
 }
 
-bool DirectoryPath::isRoot() const { return path_ == path_.root_path(); }
+bool DirectoryPath::isRoot() const {
+    return path_ == path_.root_path();
+}
 
 std::optional<DirectoryPath> DirectoryPath::parent() const {
     if (isRoot()) {

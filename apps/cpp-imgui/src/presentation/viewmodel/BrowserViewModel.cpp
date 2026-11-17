@@ -30,7 +30,8 @@ std::optional<std::size_t> BrowserViewModel::selectedIndex() const {
     if (!selected_) {
         return std::nullopt;
     }
-    const auto it = std::ranges::find_if(visible_, [&](const auto* e) { return e->path == *selected_; });
+    const auto it =
+        std::ranges::find_if(visible_, [&](const auto* e) { return e->path == *selected_; });
     if (it == visible_.end()) {
         return std::nullopt;
     }
@@ -86,7 +87,9 @@ void BrowserViewModel::navigate(Navigation navigation) {
             [this](const Back&) { return history_.peekBack(); },
             [this](const Forward&) { return history_.peekForward(); },
             [this](const Up&) { return history_.current().parent(); },
-            [this](const Reload&) -> std::optional<domain::DirectoryPath> { return history_.current(); },
+            [this](const Reload&) -> std::optional<domain::DirectoryPath> {
+                return history_.current();
+            },
         },
         navigation);
     if (!destination) {
@@ -97,7 +100,8 @@ void BrowserViewModel::navigate(Navigation navigation) {
     loader_.request(++ticket_, *destination);
 }
 
-void BrowserViewModel::commit(const Navigation& navigation, const domain::DirectoryPath& destination) {
+void BrowserViewModel::commit(const Navigation& navigation,
+                              const domain::DirectoryPath& destination) {
     std::visit(Overloaded{
                    [&](const Visit&) { history_.visit(destination); },
                    [&](const Up&) { history_.visit(destination); },

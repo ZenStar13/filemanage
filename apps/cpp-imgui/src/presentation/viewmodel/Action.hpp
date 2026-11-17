@@ -17,10 +17,18 @@ struct Refresh {};
 struct ToggleHidden {};
 struct DismissError {};
 struct ActivateSelection {};
-struct MoveSelection { int delta; };
-struct Open { domain::DirectoryPath path; };
-struct Select { std::filesystem::path path; };
-struct Activate { std::filesystem::path path; };
+struct MoveSelection {
+    int delta;
+};
+struct Open {
+    domain::DirectoryPath path;
+};
+struct Select {
+    std::filesystem::path path;
+};
+struct Activate {
+    std::filesystem::path path;
+};
 
 } // namespace fm::presentation::action
 
