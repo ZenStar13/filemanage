@@ -34,6 +34,7 @@ impl App {
         format!("{} — Files (iced)", self.browser.title())
     }
 
+    #[allow(clippy::unused_self)] // Signature dictated by `iced::Application::theme`.
     pub fn theme(&self) -> Theme {
         crate::theme::app_theme()
     }
@@ -48,6 +49,7 @@ impl App {
         self.browser.view().map(Message::Browser)
     }
 
+    #[allow(clippy::unused_self)] // Signature dictated by `iced::Application::subscription`.
     pub fn subscription(&self) -> Subscription<Message> {
         Browser::subscription().map(Message::Browser)
     }

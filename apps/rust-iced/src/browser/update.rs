@@ -123,3 +123,94 @@ impl Browser {
         self.selected = Some(entries[next].path.clone());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use fm_core::application::{BrowseDirectory, ListPlaces};
+    use fm_core::domain::{
+        DirectoryListing, EntryKind, FileEntry, FileSystemRepository, FsError, Place, PlaceKind, PlacesProvider,
+    };
+
+    use super::*;
+
+    struct NoFs;
+    impl FileSystemRepository for NoFs {
+        fn read_directory(&self, _: &DirectoryPath) -> Result<Vec<FileEntry>, FsError> {
+            Ok(Vec::new())
+        }
+    }
+
+    struct Places;
+    impl PlacesProvider for Places {
+        fn home(&self) -> DirectoryPath {
+            DirectoryPath::new("/home").unwrap()
+        }
+        fn places(&self) -> Vec<Place> {
+            vec![Place { kind: PlaceKind::Home, label: "Home".into(), path: self.home() }]
+        }
+    }
+
+    fn path(raw: &str) -> DirectoryPath {
+        DirectoryPath::new(raw).unwrap()
+    }
+
+    fn listing(raw: &str) -> DirectoryListing {
+        let dir = path(raw);
+        let entry = FileEntry {
+            name: "child".into(),
+            path: dir.as_path().join("child"),
+            kind: EntryKind::Directory,
+            size: None,
+            modified: None,
+        };
+        DirectoryListing::new(dir, vec![entry])
+    }
+
+    fn browser() -> Browser {
+        let (browser, _) = Browser::new(BrowseDirectory::new(Arc::new(NoFs)), &ListPlaces::new(Arc::new(Places)));
+        browser
+    }
+
+    /// Simulates the runtime delivering the result of the latest request.
+    fn deliver(browser: &mut Browser, navigation: Navigation, result: Result<DirectoryListing, FsError>) {
+        let ticket = browser.ticket;
+        let _ = browser.update(Message::Loaded(LoadOutcome { ticket, navigation, result }));
+    }
+
+    #[test]
+    fn commits_history_only_after_successful_load() {
+        let mut b = browser();
+        let _ = b.update(Message::Navigate(Navigation::Visit(path("/home/child"))));
+        assert_eq!(b.current(), &path("/home"), "nothing committed while loading");
+        deliver(&mut b, Navigation::Visit(path("/home/child")), Ok(listing("/home/child")));
+        assert_eq!(b.current(), &path("/home/child"));
+        assert!(b.history.can_go_back());
+    }
+
+    #[test]
+    fn failed_load_keeps_location_and_reports_error() {
+        let mut b = browser();
+        let _ = b.update(Message::Navigate(Navigation::Visit(path("/root"))));
+        deliver(&mut b, Navigation::Visit(path("/root")), Err(FsError::PermissionDenied("/root".into())));
+        assert_eq!(b.current(), &path("/home"));
+        assert!(b.error.is_some());
+        assert_eq!(b.phase, Phase::Ready);
+    }
+
+    #[test]
+    fn stale_results_are_ignored() {
+        let mut b = browser();
+        let _ = b.update(Message::Navigate(Navigation::Visit(path("/a"))));
+        let stale = b.ticket;
+        let _ = b.update(Message::Navigate(Navigation::Visit(path("/b"))));
+        let _ = b.update(Message::Loaded(LoadOutcome {
+            ticket: stale,
+            navigation: Navigation::Visit(path("/a")),
+            result: Ok(listing("/a")),
+        }));
+        assert_eq!(b.current(), &path("/home"));
+        assert_eq!(b.phase, Phase::Loading);
+    }
+}

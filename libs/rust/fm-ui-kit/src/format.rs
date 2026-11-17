@@ -1,5 +1,7 @@
 //! Human-friendly formatting of domain values for display.
 
+use std::fmt::Write as _;
+
 use std::time::SystemTime;
 
 use chrono::{DateTime, Local};
@@ -54,7 +56,7 @@ pub fn summary(summary: &ListingSummary, showing_hidden: bool) -> String {
         size(summary.total_bytes)
     );
     if !showing_hidden && summary.hidden > 0 {
-        text.push_str(&format!(" · {} hidden", summary.hidden));
+        _ = write!(text, " · {} hidden", summary.hidden);
     }
     text
 }

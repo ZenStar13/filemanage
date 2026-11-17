@@ -12,6 +12,8 @@ impl Rgb {
     }
 }
 
+// Hex colours are kept in the same `#RRGGBB` shape as `design/tokens.json`.
+#[allow(clippy::unreadable_literal)]
 pub mod color {
     use super::Rgb;
 

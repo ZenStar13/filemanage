@@ -37,6 +37,7 @@ impl DirectoryPath {
     }
 
     /// Navigates into a child by name.
+    #[must_use]
     pub fn join(&self, child: &str) -> Self {
         Self(self.0.join(child))
     }

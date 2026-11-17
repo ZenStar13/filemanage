@@ -25,3 +25,31 @@ fn to_message(event: keyboard::Event) -> Option<Message> {
     };
     Some(message)
 }
+
+#[cfg(test)]
+mod tests {
+    use iced::keyboard::{Location, Modifiers, key};
+
+    use super::*;
+
+    fn press(key: Key, modifiers: Modifiers) -> keyboard::Event {
+        keyboard::Event::KeyPressed {
+            modified_key: key.clone(),
+            physical_key: key::Physical::Unidentified(key::NativeCode::Unidentified),
+            key,
+            location: Location::Standard,
+            modifiers,
+            text: None,
+            repeat: false,
+        }
+    }
+
+    #[test]
+    fn maps_navigation_shortcuts() {
+        let back = to_message(press(Key::Named(Named::ArrowLeft), Modifiers::ALT));
+        assert!(matches!(back, Some(Message::Navigate(Navigation::Back))));
+        let toggle = to_message(press(Key::Character("h".into()), Modifiers::CTRL));
+        assert!(matches!(toggle, Some(Message::ToggleHidden)));
+        assert!(to_message(press(Key::Character("x".into()), Modifiers::empty())).is_none());
+    }
+}
