@@ -1,0 +1,71 @@
+// Design tokens mirrored from `design/tokens.json`.
+// Fonts are imported here so the compiler embeds them into the binary.
+import "../../../assets/fonts/0xProtoNerdFont-Regular.ttf";
+import "../../../assets/fonts/0xProtoNerdFont-Bold.ttf";
+
+export global Palette {
+    out property <color> background: #0B1A20;
+    out property <color> surface: #10252D;
+    out property <color> surface-raised: #16323C;
+    out property <color> border: #1F4651;
+
+    out property <color> aqua: #00E5E0;
+    out property <color> aqua-muted: #0B6F73;
+    out property <color> aqua-subtle: #0E3A40;
+
+    out property <color> purple: #A06CFF;
+    out property <color> purple-muted: #3C2A66;
+
+    out property <color> gold: #FFC94D;
+    out property <color> gold-muted: #6B5520;
+
+    out property <color> text-primary: #E8FBFB;
+    out property <color> text-secondary: #8DB6BC;
+    out property <color> text-on-aqua: #04201F;
+    out property <color> danger: #FF6B8A;
+}
+
+export global Typography {
+    out property <string> family: "0xProto Nerd Font";
+    out property <length> small: 13px;
+    out property <length> body: 15px;
+    out property <length> title: 18px;
+}
+
+export global Metrics {
+    out property <length> xs: 4px;
+    out property <length> sm: 8px;
+    out property <length> md: 12px;
+    out property <length> lg: 16px;
+    out property <length> radius-sm: 4px;
+    out property <length> radius-md: 8px;
+    out property <length> sidebar-width: 220px;
+    out property <length> row-height: 28px;
+    out property <length> toolbar-height: 44px;
+    out property <length> status-bar-height: 26px;
+}
+
+// Nerd Font glyphs used by the chrome. Entry icons arrive pre-resolved
+// from the Rust presenter, together with their semantic tone.
+export global Glyphs {
+    out property <string> back: "\u{F060}";
+    out property <string> forward: "\u{F061}";
+    out property <string> up: "\u{F062}";
+    out property <string> refresh: "\u{F021}";
+    out property <string> eye: "\u{F06E}";
+    out property <string> eye-slash: "\u{F070}";
+    out property <string> chevron-right: "\u{F054}";
+    out property <string> warning: "\u{F071}";
+}
+
+// Semantic icon tone -> palette colour.
+export enum IconTone { primary, accent, highlight, neutral }
+
+export global Tones {
+    pure public function color(tone: IconTone) -> color {
+        if tone == IconTone.primary { return Palette.aqua; }
+        if tone == IconTone.accent { return Palette.purple; }
+        if tone == IconTone.highlight { return Palette.gold; }
+        return Palette.text-secondary;
+    }
+}

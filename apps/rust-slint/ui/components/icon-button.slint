@@ -1,0 +1,57 @@
+import { Palette, Typography, Metrics } from "../theme.slint";
+import { TooltipService } from "tooltip.slint";
+
+// Square toolbar button showing a Nerd Font glyph.
+export component IconButton inherits Rectangle {
+    in property <string> glyph;
+    in property <string> tooltip;
+    in property <bool> enabled: true;
+    in property <bool> active: false;
+    // Anchor the tooltip to the right edge (for buttons at the window edge).
+    in property <bool> tooltip-at-end: false;
+    callback clicked();
+
+    width: 36px;
+    height: 30px;
+    border-radius: Metrics.radius-md;
+    border-width: 1px;
+    border-color: active ? Palette.aqua : Palette.border;
+    background: active ? Palette.aqua
+        : !enabled ? transparent
+        : touch.pressed ? Palette.aqua-muted
+        : touch.has-hover ? Palette.purple-muted
+        : Palette.surface-raised;
+    animate background { duration: 90ms; }
+
+    // Nerd Font icons are wider than their advance; Text clips to its own
+    // geometry, so let it fill the button instead of using its preferred size.
+    Text {
+        width: parent.width;
+        height: parent.height;
+        text: root.glyph;
+        font-size: Typography.body;
+        color: root.active ? Palette.text-on-aqua : root.enabled ? Palette.aqua : Palette.border;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? pointer : default;
+        clicked => { root.clicked(); }
+    }
+
+    // Publish this button's tooltip to the window-level overlay.
+    property <bool> hovered: touch.has-hover;
+    changed hovered => {
+        if self.hovered && self.tooltip != "" {
+            TooltipService.text = self.tooltip;
+            TooltipService.anchor-x = self.absolute-position.x + (self.tooltip-at-end ? self.width : 0);
+            TooltipService.anchor-y = self.absolute-position.y + self.height + 4px;
+            TooltipService.at-end = self.tooltip-at-end;
+            TooltipService.shown = true;
+        } else {
+            TooltipService.shown = false;
+        }
+    }
+}

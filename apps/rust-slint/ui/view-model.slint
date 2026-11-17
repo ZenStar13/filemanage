@@ -1,0 +1,59 @@
+// The binding surface between the declarative view and the Rust view model
+// (MVVM). The view only reads `in` properties and invokes callbacks; the
+// Rust `BrowserViewModel` writes the properties and implements the callbacks.
+import { IconTone } from "theme.slint";
+
+export struct EntryRow {
+    name: string,
+    glyph: string,
+    tone: IconTone,
+    size: string,
+    modified: string,
+    kind: string,
+    navigable: bool,
+    selected: bool,
+}
+
+export struct PlaceItem {
+    label: string,
+    glyph: string,
+    active: bool,
+}
+
+export struct Crumb {
+    label: string,
+    current: bool,
+}
+
+export global BrowserViewModel {
+    // ---- State --------------------------------------------------------
+    in property <[EntryRow]> entries;
+    in property <[PlaceItem]> places;
+    in property <[Crumb]> breadcrumbs;
+    in property <bool> can-go-back;
+    in property <bool> can-go-forward;
+    in property <bool> can-go-up;
+    in property <bool> shows-hidden;
+    in property <bool> loading;
+    in property <string> error-message;
+    in property <string> summary;
+    in property <string> current-path;
+    // Bumped when the selection is moved with the keyboard; the list scrolls
+    // the row at `reveal-index` into view.
+    in property <int> reveal-index: -1;
+    in property <int> reveal-revision;
+
+    // ---- Commands -----------------------------------------------------
+    callback go-back();
+    callback go-forward();
+    callback go-up();
+    callback refresh();
+    callback toggle-hidden();
+    callback dismiss-error();
+    callback open-place(index: int);
+    callback open-crumb(index: int);
+    callback select(index: int);
+    callback activate(index: int);
+    callback activate-selection();
+    callback move-selection(delta: int);
+}

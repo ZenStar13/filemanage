@@ -1,0 +1,146 @@
+import { ListView } from "std-widgets.slint";
+import { Palette, Typography, Metrics, Tones, Glyphs } from "../theme.slint";
+import { BrowserViewModel, EntryRow } from "../view-model.slint";
+
+global Columns {
+    out property <length> size: 110px;
+    out property <length> modified: 160px;
+    out property <length> kind: 150px;
+}
+
+component HeaderCell inherits Text {
+    font-size: Typography.small;
+    font-weight: 700;
+    color: Palette.gold;
+    vertical-alignment: center;
+}
+
+component EntryRowView inherits Rectangle {
+    in property <EntryRow> entry;
+    callback select();
+    callback activate();
+
+    height: Metrics.row-height;
+    border-radius: Metrics.radius-sm;
+    border-width: 1px;
+    border-color: entry.selected ? Palette.aqua : transparent;
+    background: entry.selected ? Palette.aqua-subtle : touch.has-hover ? Palette.purple-muted : transparent;
+
+    HorizontalLayout {
+        padding-left: Metrics.md;
+        padding-right: Metrics.md;
+        spacing: Metrics.md;
+
+        HorizontalLayout {
+            horizontal-stretch: 1;
+            spacing: Metrics.sm;
+            Text {
+                width: 18px;
+                text: root.entry.glyph;
+                color: Tones.color(root.entry.tone);
+                font-size: Typography.body;
+                vertical-alignment: center;
+            }
+            Text {
+                text: root.entry.name;
+                color: Palette.text-primary;
+                font-size: Typography.body;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+        }
+        Text {
+            width: Columns.size;
+            text: root.entry.size;
+            color: Palette.text-secondary;
+            font-size: Typography.small;
+            horizontal-alignment: right;
+            vertical-alignment: center;
+        }
+        Text {
+            width: Columns.modified;
+            text: root.entry.modified;
+            color: Palette.text-secondary;
+            font-size: Typography.small;
+            vertical-alignment: center;
+        }
+        Text {
+            width: Columns.kind;
+            text: root.entry.kind;
+            color: Palette.text-secondary;
+            font-size: Typography.small;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: root.entry.navigable ? pointer : default;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+                root.select();
+            }
+        }
+        double-clicked => { root.activate(); }
+    }
+}
+
+export component FileList inherits Rectangle {
+    background: Palette.background;
+
+    VerticalLayout {
+        // Column header
+        Rectangle {
+            height: Metrics.row-height + 4px;
+            background: Palette.surface-raised;
+            HorizontalLayout {
+                padding-left: Metrics.md + Metrics.sm;
+                padding-right: Metrics.md + Metrics.sm;
+                spacing: Metrics.md;
+                HeaderCell { text: "Name"; horizontal-stretch: 1; }
+                HeaderCell { text: "Size"; width: Columns.size; horizontal-alignment: right; }
+                HeaderCell { text: "Modified"; width: Columns.modified; }
+                HeaderCell { text: "Kind"; width: Columns.kind; }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+
+            list := ListView {
+                // ListView instantiates only the visible rows.
+                for entry[index] in BrowserViewModel.entries: Rectangle {
+                    height: Metrics.row-height + 1px;
+                    EntryRowView {
+                        x: Metrics.sm;
+                        width: parent.width - 2 * Metrics.sm;
+                        entry: entry;
+                        select => { BrowserViewModel.select(index); }
+                        activate => { BrowserViewModel.activate(index); }
+                    }
+                }
+            }
+
+            if BrowserViewModel.entries.length == 0: Text {
+                text: BrowserViewModel.loading ? "Loading…" : "This folder is empty";
+                color: Palette.text-secondary;
+                font-size: Typography.body;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    // Keep the keyboard selection visible. `changed` needs a local property.
+    property <int> reveal-revision: BrowserViewModel.reveal-revision;
+    changed reveal-revision => {
+        if BrowserViewModel.reveal-index >= 0 {
+            let row-top = BrowserViewModel.reveal-index * (Metrics.row-height + 1px);
+            if row-top < -list.content-y {
+                list.content-y = -row-top;
+            } else if row-top + Metrics.row-height > -list.content-y + list.visible-height {
+                list.content-y = -(row-top + Metrics.row-height - list.visible-height);
+            }
+        }
+    }
+}

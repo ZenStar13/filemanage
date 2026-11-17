@@ -1644,6 +1644,7 @@ version = "0.1.0"
 dependencies = [
  "fm-core",
  "fm-ui-kit",
+ "futures-channel",
  "slint",
  "slint-build",
 ]

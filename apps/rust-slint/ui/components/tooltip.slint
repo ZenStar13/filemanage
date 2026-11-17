@@ -1,0 +1,29 @@
+import { Palette, Typography, Metrics } from "../theme.slint";
+
+// Tooltips are rendered by a single window-level overlay so they always
+// float above every other element (Slint's `z` only orders siblings).
+export global TooltipService {
+    in-out property <string> text;
+    in-out property <length> anchor-x;
+    in-out property <length> anchor-y;
+    in-out property <bool> at-end;
+    in-out property <bool> shown;
+}
+
+export component TooltipOverlay inherits Rectangle {
+    visible: TooltipService.shown;
+    x: TooltipService.at-end ? TooltipService.anchor-x - self.width : TooltipService.anchor-x;
+    y: TooltipService.anchor-y;
+    width: hint.preferred-width + 2 * Metrics.sm;
+    height: hint.preferred-height + Metrics.sm;
+    background: Palette.surface-raised;
+    border-color: Palette.purple;
+    border-width: 1px;
+    border-radius: Metrics.radius-sm;
+
+    hint := Text {
+        text: TooltipService.text;
+        font-size: Typography.small;
+        color: Palette.text-primary;
+    }
+}

@@ -1,0 +1,90 @@
+import { Palette, Typography, Metrics, Glyphs } from "../theme.slint";
+import { BrowserViewModel } from "../view-model.slint";
+import { IconButton } from "icon-button.slint";
+
+component CrumbButton inherits Rectangle {
+    in property <string> label;
+    in property <bool> current;
+    callback clicked();
+
+    height: 28px;
+    width: label-text.preferred-width + 2 * Metrics.sm;
+    border-radius: Metrics.radius-sm;
+    background: touch.has-hover ? Palette.purple-muted : transparent;
+
+    label-text := Text {
+        text: root.label;
+        font-size: Typography.body;
+        color: touch.has-hover ? Palette.aqua : root.current ? Palette.gold : Palette.text-primary;
+        vertical-alignment: center;
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component Toolbar inherits Rectangle {
+    height: Metrics.toolbar-height;
+    background: Palette.surface;
+
+    HorizontalLayout {
+        padding-left: Metrics.md;
+        padding-right: Metrics.md;
+        spacing: Metrics.xs;
+
+        VerticalLayout { alignment: center; IconButton {
+            glyph: Glyphs.back; tooltip: "Back (Alt+←)"; enabled: BrowserViewModel.can-go-back;
+            clicked => { BrowserViewModel.go-back(); }
+        } }
+        VerticalLayout { alignment: center; IconButton {
+            glyph: Glyphs.forward; tooltip: "Forward (Alt+→)"; enabled: BrowserViewModel.can-go-forward;
+            clicked => { BrowserViewModel.go-forward(); }
+        } }
+        VerticalLayout { alignment: center; IconButton {
+            glyph: Glyphs.up; tooltip: "Up (Backspace)"; enabled: BrowserViewModel.can-go-up;
+            clicked => { BrowserViewModel.go-up(); }
+        } }
+        VerticalLayout { alignment: center; IconButton {
+            glyph: Glyphs.refresh; tooltip: "Refresh (F5)";
+            clicked => { BrowserViewModel.refresh(); }
+        } }
+
+        Rectangle { width: Metrics.sm; }
+
+        // Breadcrumbs: `/ › home › user`
+        HorizontalLayout {
+            horizontal-stretch: 1;
+            spacing: Metrics.xs;
+            alignment: start;
+            for crumb[index] in BrowserViewModel.breadcrumbs: HorizontalLayout {
+                spacing: Metrics.xs;
+                if index > 1: Text {
+                    text: Glyphs.chevron-right;
+                    font-size: 11px;
+                    color: Palette.purple;
+                    vertical-alignment: center;
+                }
+                VerticalLayout {
+                    alignment: center;
+                    CrumbButton {
+                        label: crumb.label;
+                        current: crumb.current;
+                        clicked => { BrowserViewModel.open-crumb(index); }
+                    }
+                }
+            }
+        }
+
+        VerticalLayout { alignment: center; IconButton {
+            glyph: BrowserViewModel.shows-hidden ? Glyphs.eye : Glyphs.eye-slash;
+            tooltip: "Show hidden files (Ctrl+H)";
+            active: BrowserViewModel.shows-hidden;
+            tooltip-at-end: true;
+            clicked => { BrowserViewModel.toggle-hidden(); }
+        } }
+    }
+
+    Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border; }
+}

@@ -1,0 +1,64 @@
+import { Palette, Typography, Metrics, Glyphs } from "../theme.slint";
+import { BrowserViewModel } from "../view-model.slint";
+
+export component StatusBar inherits Rectangle {
+    height: Metrics.status-bar-height;
+    background: Palette.surface;
+
+    Rectangle { y: 0; height: 1px; background: Palette.border; }
+
+    HorizontalLayout {
+        padding-left: Metrics.md;
+        padding-right: Metrics.md;
+        Text {
+            text: BrowserViewModel.summary;
+            color: Palette.gold;
+            font-size: Typography.small;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+        Text {
+            text: BrowserViewModel.loading ? "Loading…" : BrowserViewModel.current-path;
+            color: BrowserViewModel.loading ? Palette.purple : Palette.text-secondary;
+            font-size: Typography.small;
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component ErrorBanner inherits Rectangle {
+    in property <string> message;
+    callback dismiss();
+
+    height: 44px;
+    background: Palette.purple-muted;
+    border-color: Palette.danger;
+    border-width: 1px;
+    border-radius: Metrics.radius-md;
+
+    HorizontalLayout {
+        padding-left: Metrics.md;
+        padding-right: Metrics.md;
+        spacing: Metrics.md;
+        Text { text: Glyphs.warning; color: Palette.danger; vertical-alignment: center; }
+        Text {
+            text: root.message;
+            color: Palette.text-primary;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+            overflow: elide;
+        }
+        Rectangle {
+            width: dismiss-label.preferred-width + 2 * Metrics.md;
+            dismiss-label := Text {
+                text: "Dismiss";
+                color: dismiss-touch.has-hover ? Palette.gold : Palette.aqua;
+                vertical-alignment: center;
+            }
+            dismiss-touch := TouchArea {
+                mouse-cursor: pointer;
+                clicked => { root.dismiss(); }
+            }
+        }
+    }
+}

@@ -1,0 +1,64 @@
+// Root view. Pure layout + key bindings; all state comes from the
+// `BrowserViewModel` global, which the Rust side drives.
+import { Palette, Typography, Metrics } from "theme.slint";
+import { BrowserViewModel, EntryRow, PlaceItem, Crumb } from "view-model.slint";
+import { Toolbar } from "components/toolbar.slint";
+import { Sidebar } from "components/sidebar.slint";
+import { FileList } from "components/file-list.slint";
+import { StatusBar, ErrorBanner } from "components/status-bar.slint";
+import { TooltipOverlay } from "components/tooltip.slint";
+
+export { BrowserViewModel, EntryRow, PlaceItem, Crumb }
+export { IconTone } from "theme.slint";
+
+export component AppWindow inherits Window {
+    title: "Files (Slint)";
+    preferred-width: 1100px;
+    preferred-height: 700px;
+    min-width: 640px;
+    min-height: 400px;
+    background: Palette.background;
+    default-font-family: Typography.family;
+    default-font-size: Typography.body;
+    forward-focus: keys;
+
+    keys := FocusScope {
+        key-pressed(event) => {
+            if event.modifiers.alt && event.text == Key.LeftArrow { BrowserViewModel.go-back(); return accept; }
+            if event.modifiers.alt && event.text == Key.RightArrow { BrowserViewModel.go-forward(); return accept; }
+            if event.modifiers.alt && event.text == Key.UpArrow { BrowserViewModel.go-up(); return accept; }
+            if event.text == Key.Backspace { BrowserViewModel.go-up(); return accept; }
+            if event.text == Key.F5 { BrowserViewModel.refresh(); return accept; }
+            if event.modifiers.control && (event.text == "h" || event.text == "H") { BrowserViewModel.toggle-hidden(); return accept; }
+            if event.text == Key.UpArrow { BrowserViewModel.move-selection(-1); return accept; }
+            if event.text == Key.DownArrow { BrowserViewModel.move-selection(1); return accept; }
+            if event.text == Key.Return { BrowserViewModel.activate-selection(); return accept; }
+            if event.text == Key.Escape { BrowserViewModel.dismiss-error(); return accept; }
+            reject
+        }
+
+        VerticalLayout {
+            HorizontalLayout {
+                vertical-stretch: 1;
+                Sidebar { }
+                Rectangle { width: 1px; background: Palette.border; }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    Toolbar { }
+                    if BrowserViewModel.error-message != "": VerticalLayout {
+                        padding: Metrics.sm;
+                        ErrorBanner {
+                            message: BrowserViewModel.error-message;
+                            dismiss => { BrowserViewModel.dismiss-error(); }
+                        }
+                    }
+                    FileList { vertical-stretch: 1; }
+                }
+            }
+            StatusBar { }
+        }
+    }
+
+    // Last child, so it paints above everything else.
+    TooltipOverlay { }
+}

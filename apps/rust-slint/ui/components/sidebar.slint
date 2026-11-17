@@ -1,0 +1,74 @@
+import { Palette, Typography, Metrics } from "../theme.slint";
+import { BrowserViewModel } from "../view-model.slint";
+
+component PlaceTile inherits Rectangle {
+    in property <string> label;
+    in property <string> glyph;
+    in property <bool> active;
+    callback clicked();
+
+    height: 32px;
+    border-radius: Metrics.radius-md;
+    border-width: 1px;
+    border-color: active ? Palette.purple : transparent;
+    background: active ? Palette.purple-muted : touch.has-hover ? Palette.surface-raised : transparent;
+
+    HorizontalLayout {
+        padding-left: 10px;
+        spacing: 10px;
+        Text {
+            width: 16px;
+            text: root.glyph;
+            color: Palette.aqua;
+            font-size: Typography.body;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.label;
+            color: touch.has-hover && !root.active ? Palette.aqua : Palette.text-primary;
+            font-size: Typography.body;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
+export component Sidebar inherits Rectangle {
+    width: Metrics.sidebar-width;
+    background: Palette.surface;
+
+    VerticalLayout {
+        padding: Metrics.sm;
+        spacing: 2px;
+        alignment: start;
+
+        HorizontalLayout {
+            padding-left: Metrics.sm;
+            height: 40px;
+            Text {
+                text: "Files";
+                font-size: Typography.title;
+                font-weight: 700;
+                color: Palette.gold;
+                vertical-alignment: center;
+            }
+        }
+        Text {
+            text: "PLACES";
+            font-size: Typography.small;
+            color: Palette.text-secondary;
+            height: 22px;
+        }
+        for place[index] in BrowserViewModel.places: PlaceTile {
+            label: place.label;
+            glyph: place.glyph;
+            active: place.active;
+            clicked => { BrowserViewModel.open-place(index); }
+        }
+    }
+}
