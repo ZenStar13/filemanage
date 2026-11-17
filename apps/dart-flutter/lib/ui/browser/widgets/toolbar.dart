@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_elevation.dart';
 import '../../core/theme/app_glyphs.dart';
-import '../../core/theme/app_palette.dart';
 import '../../core/theme/dimens.dart';
 import '../../core/widgets/glyph.dart';
 import '../view_models/browser_view_model.dart';
@@ -20,8 +20,8 @@ class BrowserToolbar extends StatelessWidget {
       height: Dimens.toolbarHeight,
       padding: const EdgeInsets.symmetric(horizontal: Dimens.md),
       decoration: BoxDecoration(
-        color: context.palette.chrome,
-        border: Border(bottom: BorderSide(color: context.palette.divider)),
+        color: AppElevation.toolbar.surface,
+        boxShadow: AppElevation.toolbar.shadows,
       ),
       child: Row(
         spacing: Dimens.xs,
@@ -79,13 +79,26 @@ class _ToolButton extends StatelessWidget {
       iconSize: Dimens.fontBody,
       constraints: const BoxConstraints.tightFor(width: 36, height: 30),
       padding: EdgeInsets.zero,
-      style: active
-          ? IconButton.styleFrom(
-              backgroundColor: AppColors.aqua,
-              foregroundColor: AppColors.textOnAqua,
-            )
-          : null,
-      icon: Glyph(glyph),
+      style:
+          IconButton.styleFrom(
+            backgroundColor: active
+                ? AppColors.aqua
+                : AppElevation.buttonSurface,
+            foregroundColor: active ? AppColors.textOnAqua : null,
+            // Material's button elevation is state-aware: it drops to 0 when the
+            // button is disabled, and we flatten it while pressed.
+            elevation: AppElevation.buttonElevation,
+            shadowColor: Colors.black,
+          ).copyWith(
+            elevation: WidgetStateProperty.resolveWith(
+              (states) =>
+                  states.contains(WidgetState.disabled) ||
+                      states.contains(WidgetState.pressed)
+                  ? 0
+                  : AppElevation.buttonElevation,
+            ),
+          ),
+      icon: Glyph(glyph, size: Dimens.fontBody, opticallyCentered: true),
     );
   }
 }

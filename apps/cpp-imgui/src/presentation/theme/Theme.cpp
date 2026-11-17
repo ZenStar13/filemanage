@@ -1,5 +1,6 @@
 #include "presentation/theme/Theme.hpp"
 
+#include "presentation/theme/Elevation.hpp"
 #include "presentation/theme/Palette.hpp"
 
 #include <imgui.h>
@@ -44,7 +45,7 @@ void applyTheme() {
     c[ImGuiCol_ScrollbarGrab] = kAquaMuted;
     c[ImGuiCol_ScrollbarGrabHovered] = kAqua;
     c[ImGuiCol_ScrollbarGrabActive] = kAqua;
-    c[ImGuiCol_TableHeaderBg] = kSurfaceRaised;
+    c[ImGuiCol_TableHeaderBg] = elevation::kHeader.surface;
     c[ImGuiCol_TableBorderStrong] = kBorder;
     c[ImGuiCol_TableBorderLight] = kBorder;
     c[ImGuiCol_TableRowBg] = {0, 0, 0, 0};

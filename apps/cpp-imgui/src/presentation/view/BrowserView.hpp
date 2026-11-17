@@ -17,6 +17,9 @@ class BrowserView {
 
   private:
     static void bindShortcuts(ActionQueue& actions);
+    static void drawElevation(const view::FileTable::Rect& sidebar,
+                              const view::FileTable::Rect& toolbar,
+                              const std::optional<view::FileTable::Rect>& header);
 
     Fonts fonts_;
     view::FileTable table_;

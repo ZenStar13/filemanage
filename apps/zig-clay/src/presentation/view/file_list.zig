@@ -6,6 +6,7 @@ const std = @import("std");
 const cl = @import("zclay");
 const core = @import("core");
 const theme = @import("../theme.zig");
+const elevation = @import("../elevation.zig");
 const glyphs = @import("../glyphs.zig");
 const format = @import("../format.zig");
 const widgets = @import("widgets.zig");
@@ -78,8 +79,9 @@ fn header() void {
             .child_gap = theme.spacing.md,
             .child_alignment = .{ .y = .center },
         },
-        .background_color = palette.surface_raised,
+        .background_color = elevation.header.surface,
     })({
+        elevation.castFromParent(&elevation.header);
         column(.grow, "Name", .left);
         column(.fixed(size_width), "Size", .right);
         column(.fixed(modified_width), "Modified", .left);

@@ -2,6 +2,8 @@
 
 const cl = @import("zclay");
 const theme = @import("../theme.zig");
+const glyphs = @import("../glyphs.zig");
+const elevation = @import("../elevation.zig");
 const Frame = @import("../Frame.zig");
 
 const palette = theme.palette;
@@ -24,19 +26,30 @@ pub const IconButton = struct {
     tooltip_at_end: bool = false,
 };
 
-/// Square glyph button; returns true when clicked this frame.
+/// Raised square glyph button; returns true when clicked this frame.
 pub fn iconButton(frame: *Frame, b: IconButton) bool {
     var clicked = false;
+    // Hover state comes from the previous frame's layout, like everything in Clay.
+    const pressed = b.enabled and cl.pointerOver(b.id) and frame.input.pointer_down;
+    // Optical centring: Nerd Font icons overflow their advance to the right,
+    // so pad the right side to pull the ink back to the centre.
+    const shift: u16 = @intFromFloat(@round(2 * glyphs.opticalOffset(b.glyph) * 15));
     cl.UI()(.{
         .id = b.id,
-        .layout = .{ .sizing = .{ .w = .fixed(36), .h = .fixed(30) }, .child_alignment = .{ .x = .center, .y = .center } },
+        .layout = .{
+            .sizing = .{ .w = .fixed(36), .h = .fixed(30) },
+            .padding = .{ .right = shift },
+            .child_alignment = .{ .x = .center, .y = .center },
+        },
         .corner_radius = .all(theme.radius.md),
         .border = .{ .color = if (b.active) palette.aqua else palette.border, .width = .outside(1) },
         .background_color = blk: {
             if (b.active) break :blk palette.aqua;
             if (!b.enabled) break :blk palette.transparent;
-            break :blk if (cl.hovered()) palette.purple_muted else palette.surface_raised;
+            break :blk if (cl.hovered()) palette.purple_muted else elevation.button.surface;
         },
+        // Raised: the renderer draws this shadow just before the button.
+        .user_data = if (b.enabled and !pressed) elevation.handle(&elevation.button.cast) else null,
     })({
         const color = if (b.active) palette.text_on_aqua else if (b.enabled) palette.aqua else palette.border;
         text(b.glyph, theme.font.body, color);

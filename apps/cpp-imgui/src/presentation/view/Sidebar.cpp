@@ -1,3 +1,4 @@
+#include "presentation/theme/Elevation.hpp"
 #include "presentation/theme/Glyphs.hpp"
 #include "presentation/theme/Palette.hpp"
 #include "presentation/view/Views.hpp"
@@ -7,7 +8,7 @@
 namespace fm::presentation::view {
 
 void drawSidebar(const BrowserViewModel& vm, ActionQueue& actions, const Fonts& fonts) {
-    ImGui::PushStyleColor(ImGuiCol_ChildBg, palette::kSurface);
+    ImGui::PushStyleColor(ImGuiCol_ChildBg, elevation::kSidebar.surface);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {dimens::kSm, dimens::kSm});
     ImGui::BeginChild(
         "##sidebar",

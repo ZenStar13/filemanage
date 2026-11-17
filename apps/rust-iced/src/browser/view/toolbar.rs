@@ -28,9 +28,11 @@ pub fn view(browser: &Browser) -> Element<'_, Message> {
 
     let shows_hidden = browser.visibility.shows_hidden();
     let hidden_toggle = tooltip(
-        button(text(if shows_hidden { glyphs::EYE } else { glyphs::EYE_SLASH }).size(size::FONT_BODY))
+        button(icon(if shows_hidden { glyphs::EYE } else { glyphs::EYE_SLASH }))
             .on_press(Message::ToggleHidden)
-            .padding([spacing::XS, spacing::MD])
+            .padding(0)
+            .width(TOOL_WIDTH)
+            .height(TOOL_HEIGHT)
             .style(style::toggle_button(shows_hidden)),
         "Show hidden files (Ctrl+H)",
         tooltip::Position::Bottom,
@@ -49,11 +51,26 @@ pub fn view(browser: &Browser) -> Element<'_, Message> {
         .into()
 }
 
+const TOOL_WIDTH: f32 = 36.0;
+const TOOL_HEIGHT: f32 = 30.0;
+
+/// A glyph centred *optically* in its button. Nerd Font icons overflow their
+/// advance width to the right, so extra right padding shifts the ink back.
+fn icon(glyph: &str) -> Element<'_, Message> {
+    let shift = glyphs::optical_offset(glyph) * size::FONT_BODY;
+    container(text(glyph).size(size::FONT_BODY))
+        .center(Fill)
+        .padding(iced::Padding { right: 2.0 * shift, ..iced::Padding::ZERO })
+        .into()
+}
+
 fn tool<'a>(glyph: &'a str, hint: &'a str, on_press: Option<Message>) -> Element<'a, Message> {
     tooltip(
-        button(text(glyph).size(size::FONT_BODY))
+        button(icon(glyph))
             .on_press_maybe(on_press)
-            .padding([spacing::XS, spacing::MD])
+            .padding(0)
+            .width(TOOL_WIDTH)
+            .height(TOOL_HEIGHT)
             .style(style::tool_button),
         text(hint).size(size::FONT_SMALL),
         tooltip::Position::Bottom,

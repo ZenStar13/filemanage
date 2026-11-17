@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/theme/app_elevation.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/dimens.dart';
 import '../view_models/browser_view_model.dart';
@@ -8,6 +9,7 @@ import 'file_row.dart';
 const _sizeWidth = 110.0;
 const _modifiedWidth = 160.0;
 const _kindWidth = 150.0;
+const _headerHeight = Dimens.rowHeight + 4;
 
 /// Column header + virtualised list of entries.
 class FileList extends StatelessWidget {
@@ -19,10 +21,12 @@ class FileList extends StatelessWidget {
   Widget build(BuildContext context) {
     final entries = viewModel.entries;
     final palette = context.palette;
-    return Column(
+    // The header is one elevation above the rows: stacked after them so its
+    // shadow falls onto the list.
+    return Stack(
       children: [
-        const _Header(),
-        Expanded(
+        Positioned.fill(
+          top: _headerHeight,
           child: entries.isEmpty
               ? Center(
                   child: Text(
@@ -53,6 +57,7 @@ class FileList extends StatelessWidget {
                   },
                 ),
         ),
+        const Positioned(top: 0, left: 0, right: 0, child: _Header()),
       ],
     );
   }
@@ -70,11 +75,13 @@ class _Header extends StatelessWidget {
       fontSize: Dimens.fontSmall,
     );
     return Container(
-      color: palette.chromeRaised,
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimens.md + Dimens.sm,
-        vertical: Dimens.sm,
+      height: _headerHeight,
+      alignment: Alignment.centerLeft,
+      decoration: BoxDecoration(
+        color: AppElevation.header.surface,
+        boxShadow: AppElevation.header.shadows,
       ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.md + Dimens.sm),
       child: Row(
         spacing: Dimens.md,
         children: [

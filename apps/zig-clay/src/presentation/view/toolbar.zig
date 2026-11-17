@@ -1,5 +1,6 @@
 const cl = @import("zclay");
 const theme = @import("../theme.zig");
+const elevation = @import("../elevation.zig");
 const glyphs = @import("../glyphs.zig");
 const widgets = @import("widgets.zig");
 const BrowserViewModel = @import("../BrowserViewModel.zig");
@@ -16,9 +17,9 @@ pub fn build(vm: *const BrowserViewModel, frame: *Frame) void {
             .child_gap = theme.spacing.xs,
             .child_alignment = .{ .y = .center },
         },
-        .background_color = palette.surface,
-        .border = .{ .color = palette.border, .width = .{ .bottom = 1 } },
+        .background_color = elevation.toolbar.surface,
     })({
+        elevation.castFromParent(&elevation.toolbar);
         const h = vm.history;
         if (widgets.iconButton(frame, .{ .id = .ID("Back"), .glyph = glyphs.back, .tooltip = "Back (Alt+Left)", .enabled = h.canGoBack() })) frame.emit(.back);
         if (widgets.iconButton(frame, .{ .id = .ID("Forward"), .glyph = glyphs.forward, .tooltip = "Forward (Alt+Right)", .enabled = h.canGoForward() })) frame.emit(.forward);

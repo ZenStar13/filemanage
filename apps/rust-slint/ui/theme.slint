@@ -69,3 +69,42 @@ export global Tones {
         return Palette.text-secondary;
     }
 }
+
+// Elevation scale (design/tokens.json → elevation). Higher sections are
+// lighter and cast a shadow onto lower ones:
+// file list (0) < column header (1) < toolbar (2) < places sidebar (3).
+export global Elevation {
+    out property <color> list-surface: #0B1A20;
+
+    out property <color> header-surface: #10262E;
+    out property <length> header-shadow-y: 1px;
+    out property <length> header-shadow-blur: 4px;
+    out property <color> header-shadow: #00000059; // alpha .35
+
+    out property <color> toolbar-surface: #132C35;
+    out property <length> toolbar-shadow-y: 2px;
+    out property <length> toolbar-shadow-blur: 8px;
+    out property <color> toolbar-shadow: #00000073; // alpha .45
+
+    out property <color> sidebar-surface: #17323C;
+    out property <length> sidebar-shadow-x: 3px;
+    out property <length> sidebar-shadow-blur: 14px;
+    out property <color> sidebar-shadow: #0000008C; // alpha .55
+
+    out property <color> button-surface: #1D3D49;
+    out property <length> button-shadow-y: 1px;
+    out property <length> button-shadow-blur: 3px;
+    out property <color> button-shadow: #00000073; // alpha .45
+}
+
+// Optical-centre correction (design/tokens.json → glyphCentering), in em.
+export global GlyphCentering {
+    pure public function offset(glyph: string) -> float {
+        if glyph == Glyphs.back || glyph == Glyphs.forward { return 0.094; }
+        if glyph == Glyphs.up { return 0.036; }
+        if glyph == Glyphs.refresh { return 0.122; }
+        if glyph == Glyphs.eye { return 0.209; }
+        if glyph == Glyphs.eye-slash { return 0.268; }
+        return 0;
+    }
+}

@@ -63,3 +63,44 @@ pub mod layout {
     pub const TOOLBAR_HEIGHT: f32 = 44.0;
     pub const STATUS_BAR_HEIGHT: f32 = 26.0;
 }
+
+/// Elevation scale (`design/tokens.json` → `elevation`). Higher sections are
+/// lighter and cast a shadow onto lower ones:
+/// file list (0) < column header (1) < toolbar (2) < places sidebar (3).
+pub mod elevation {
+    use super::Rgb;
+
+    /// A drop shadow: black at `alpha`, offset and blur in logical pixels.
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    pub struct Shadow {
+        pub x: f32,
+        pub y: f32,
+        pub blur: f32,
+        pub alpha: f32,
+    }
+
+    /// One step of the elevation scale.
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    pub struct Level {
+        pub surface: Rgb,
+        pub shadow: Option<Shadow>,
+    }
+
+    pub const FILE_LIST: Level = Level { surface: Rgb::from_hex(0x000B_1A20), shadow: None };
+    pub const HEADER: Level = Level {
+        surface: Rgb::from_hex(0x0010_262E),
+        shadow: Some(Shadow { x: 0.0, y: 1.0, blur: 4.0, alpha: 0.35 }),
+    };
+    pub const TOOLBAR: Level = Level {
+        surface: Rgb::from_hex(0x0013_2C35),
+        shadow: Some(Shadow { x: 0.0, y: 2.0, blur: 8.0, alpha: 0.45 }),
+    };
+    pub const SIDEBAR: Level = Level {
+        surface: Rgb::from_hex(0x0017_323C),
+        shadow: Some(Shadow { x: 3.0, y: 0.0, blur: 14.0, alpha: 0.55 }),
+    };
+    pub const BUTTON: Level = Level {
+        surface: Rgb::from_hex(0x001D_3D49),
+        shadow: Some(Shadow { x: 0.0, y: 1.0, blur: 3.0, alpha: 0.45 }),
+    };
+}

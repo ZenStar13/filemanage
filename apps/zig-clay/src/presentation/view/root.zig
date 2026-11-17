@@ -26,7 +26,6 @@ pub fn build(vm: *const BrowserViewModel, frame: *Frame) void {
             cl.UI()(.{
                 .id = .ID("Main"),
                 .layout = .{ .direction = .top_to_bottom, .sizing = .grow },
-                .border = .{ .color = theme.palette.border, .width = .{ .left = 1 } },
             })({
                 toolbar.build(vm, frame);
                 if (vm.error_message) |message| toolbar.errorBanner(message, frame);

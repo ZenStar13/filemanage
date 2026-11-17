@@ -1,4 +1,4 @@
-import { Palette, Typography, Metrics, Glyphs } from "../theme.slint";
+import { Palette, Typography, Metrics, Glyphs, Elevation } from "../theme.slint";
 import { BrowserViewModel } from "../view-model.slint";
 import { IconButton } from "icon-button.slint";
 
@@ -27,7 +27,10 @@ component CrumbButton inherits Rectangle {
 
 export component Toolbar inherits Rectangle {
     height: Metrics.toolbar-height;
-    background: Palette.surface;
+    background: Elevation.toolbar-surface;
+    drop-shadow-offset-y: Elevation.toolbar-shadow-y;
+    drop-shadow-blur: Elevation.toolbar-shadow-blur;
+    drop-shadow-color: Elevation.toolbar-shadow;
 
     HorizontalLayout {
         padding-left: Metrics.md;
@@ -86,5 +89,4 @@ export component Toolbar inherits Rectangle {
         } }
     }
 
-    Rectangle { y: parent.height - 1px; height: 1px; background: Palette.border; }
 }

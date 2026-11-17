@@ -1,5 +1,6 @@
 const cl = @import("zclay");
 const theme = @import("../theme.zig");
+const elevation = @import("../elevation.zig");
 const glyphs = @import("../glyphs.zig");
 const widgets = @import("widgets.zig");
 const BrowserViewModel = @import("../BrowserViewModel.zig");
@@ -16,8 +17,9 @@ pub fn build(vm: *const BrowserViewModel, frame: *Frame) void {
             .padding = .all(theme.spacing.sm),
             .child_gap = 2,
         },
-        .background_color = palette.surface,
+        .background_color = elevation.sidebar.surface,
     })({
+        elevation.castFromParent(&elevation.sidebar);
         cl.UI()(.{ .layout = .{ .padding = .{ .left = theme.spacing.sm, .top = theme.spacing.sm, .bottom = theme.spacing.sm } } })({
             widgets.boldText("Files", theme.font.title, palette.gold);
         });

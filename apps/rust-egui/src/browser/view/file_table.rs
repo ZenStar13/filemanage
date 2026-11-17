@@ -1,20 +1,28 @@
 use egui::{Align, CornerRadius, Layout, RichText, Sense, Stroke, StrokeKind, Ui};
 use egui_extras::{Column, TableBuilder};
-use fm_ui_kit::tokens::{layout, size};
+use fm_ui_kit::tokens::{elevation, layout, size};
 use fm_ui_kit::{format, glyphs};
 
 use crate::browser::{BrowserViewModel, Intent};
 use crate::theme::{self, palette};
 
-pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
+const HEADER_HEIGHT: f32 = layout::ROW_HEIGHT + 4.0;
+
+/// Draws the table; returns the header's rect (if shown) so the caller can
+/// cast its elevation shadow.
+pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) -> Option<egui::Rect> {
     let entries = vm.entries();
     if entries.is_empty() {
         ui.centered_and_justified(|ui| {
             let message = if vm.is_loading() { "Loading…" } else { "This folder is empty" };
             ui.label(RichText::new(message).color(palette::TEXT_SECONDARY));
         });
-        return;
+        return None;
     }
+    let header_rect = egui::Rect::from_min_size(
+        egui::pos2(ui.max_rect().left(), ui.cursor().top()),
+        egui::vec2(ui.max_rect().width(), HEADER_HEIGHT),
+    );
 
     let mut table = TableBuilder::new(ui)
         .striped(true)
@@ -33,13 +41,20 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
     };
 
     table
-        .header(layout::ROW_HEIGHT + 4.0, |mut header| {
+        .header(HEADER_HEIGHT, |mut header| {
             for (index, label) in ["Name", "Size", "Modified", "Kind"].into_iter().enumerate() {
                 header.col(|ui| {
                     // Cells clip their own painter; paint the band on the layer
                     // instead so it is continuous across column gaps.
-                    let band = ui.max_rect().expand2(egui::vec2(ui.spacing().item_spacing.x, 0.0));
-                    ui.ctx().layer_painter(ui.layer_id()).rect_filled(band, 0.0, palette::SURFACE_RAISED);
+                    let band = ui
+                        .max_rect()
+                        .expand2(egui::vec2(ui.spacing().item_spacing.x, 0.0))
+                        .intersect(header_rect);
+                    ui.ctx().layer_painter(ui.layer_id()).rect_filled(
+                        band,
+                        0.0,
+                        theme::rgb(elevation::HEADER.surface),
+                    );
                     if index == 0 {
                         ui.add_space(12.0);
                     }
@@ -94,4 +109,5 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
                 }
             });
         });
+    Some(header_rect)
 }

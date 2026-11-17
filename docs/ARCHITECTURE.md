@@ -98,6 +98,10 @@ its own theme module (`theme.rs`, `app_colors.dart` + `AppPalette` extension,
 * **Purple** `#A06CFF`: interactive accent. Hover fill (`#3C2A66`), the active place, breadcrumb chevrons, symlinks, tooltips.
 * **Gold** `#FFC94D`: highlight. App title, column headers, current breadcrumb, status-bar figures, media files.
 * Dark teal surfaces (`#0B1A20` → `#16323C`) keep the accents readable.
+* **Elevation**: file list (flat) < column header < toolbar < places sidebar.
+  Higher sections are lighter and cast shadows onto lower ones; tool buttons
+  are raised with a small shadow and sit flat when pressed or disabled. See
+  [ELEVATION.md](ELEVATION.md).
 
 **Font:** 0xProto Nerd Font (`assets/fonts`). It was built from the official
 [0xProto](https://github.com/0xType/0xProto) release with the official Nerd

@@ -40,11 +40,12 @@ export component AppWindow inherits Window {
         VerticalLayout {
             HorizontalLayout {
                 vertical-stretch: 1;
-                Sidebar { }
-                Rectangle { width: 1px; background: Palette.border; }
+                // `z` raises the sidebar above its later siblings so its
+                // shadow falls onto them (elevation 3, the highest).
+                Sidebar { z: 3; }
                 VerticalLayout {
                     horizontal-stretch: 1;
-                    Toolbar { }
+                    Toolbar { z: 2; }
                     if BrowserViewModel.error-message != "": VerticalLayout {
                         padding: Metrics.sm;
                         ErrorBanner {

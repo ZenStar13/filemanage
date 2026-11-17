@@ -2,11 +2,22 @@
 //! stay out of layout code.
 
 use fm_ui_kit::glyphs::IconTone;
+use fm_ui_kit::tokens::elevation::{self, Level};
 use fm_ui_kit::tokens::radius;
 use iced::widget::{button, container};
-use iced::{Background, Border, Color, Theme};
+use iced::{Background, Border, Color, Shadow, Theme, Vector};
 
-use super::palette;
+use super::{palette, rgb};
+
+/// Converts an elevation level into its surface colour and iced shadow.
+fn elevated(level: Level) -> (Color, Shadow) {
+    let shadow = level.shadow.map_or(Shadow::default(), |s| Shadow {
+        color: Color { a: s.alpha, ..Color::BLACK },
+        offset: Vector::new(s.x, s.y),
+        blur_radius: s.blur,
+    });
+    (rgb(level.surface), shadow)
+}
 
 fn border(color: Color, width: f32, radius: f32) -> Border {
     Border { color, width, radius: radius.into() }
@@ -21,16 +32,16 @@ pub fn icon_color(tone: IconTone) -> Color {
     }
 }
 
+/// Elevation 2: above the header and list, below the sidebar.
 pub fn toolbar(_: &Theme) -> container::Style {
-    container::Style {
-        background: Some(Background::Color(palette::SURFACE)),
-        border: border(palette::BORDER, 1.0, 0.0),
-        ..container::Style::default()
-    }
+    let (surface, shadow) = elevated(elevation::TOOLBAR);
+    container::Style { background: Some(Background::Color(surface)), shadow, ..container::Style::default() }
 }
 
+/// Elevation 3: the highest section; casts its shadow to the right.
 pub fn sidebar(_: &Theme) -> container::Style {
-    container::Style { background: Some(Background::Color(palette::SURFACE)), ..container::Style::default() }
+    let (surface, shadow) = elevated(elevation::SIDEBAR);
+    container::Style { background: Some(Background::Color(surface)), shadow, ..container::Style::default() }
 }
 
 pub fn content(_: &Theme) -> container::Style {
@@ -41,10 +52,13 @@ pub fn content(_: &Theme) -> container::Style {
     }
 }
 
+/// Elevation 1: slightly above the flat file list.
 pub fn header_row(_: &Theme) -> container::Style {
+    let (surface, shadow) = elevated(elevation::HEADER);
     container::Style {
-        background: Some(Background::Color(palette::SURFACE_RAISED)),
+        background: Some(Background::Color(surface)),
         text_color: Some(palette::GOLD),
+        shadow,
         ..container::Style::default()
     }
 }
@@ -84,18 +98,21 @@ pub fn entry_row(selected: bool, hovered: bool) -> impl Fn(&Theme) -> container:
     }
 }
 
-/// Toolbar icon buttons (back, forward, up, refresh…).
+/// Toolbar icon buttons (back, forward, up, refresh…): raised with a small
+/// shadow; pressed and disabled buttons sit flat on the toolbar.
 pub fn tool_button(_: &Theme, status: button::Status) -> button::Style {
-    let (background, text_color) = match status {
-        button::Status::Hovered => (palette::PURPLE_MUTED, palette::AQUA),
-        button::Status::Pressed => (palette::AQUA_MUTED, palette::TEXT_PRIMARY),
-        button::Status::Disabled => (Color::TRANSPARENT, palette::BORDER),
-        button::Status::Active => (palette::SURFACE_RAISED, palette::AQUA),
+    let (surface, shadow) = elevated(elevation::BUTTON);
+    let (background, text_color, shadow) = match status {
+        button::Status::Hovered => (palette::PURPLE_MUTED, palette::AQUA, shadow),
+        button::Status::Pressed => (palette::AQUA_MUTED, palette::TEXT_PRIMARY, Shadow::default()),
+        button::Status::Disabled => (Color::TRANSPARENT, palette::BORDER, Shadow::default()),
+        button::Status::Active => (surface, palette::AQUA, shadow),
     };
     button::Style {
         background: Some(Background::Color(background)),
         text_color,
         border: border(palette::BORDER, 1.0, radius::MD),
+        shadow,
         ..button::Style::default()
     }
 }
@@ -108,6 +125,7 @@ pub fn toggle_button(active: bool) -> impl Fn(&Theme, button::Status) -> button:
                 background: Some(Background::Color(palette::AQUA)),
                 text_color: palette::TEXT_ON_AQUA,
                 border: border(palette::AQUA, 1.0, radius::MD),
+                shadow: elevated(elevation::BUTTON).1,
                 ..button::Style::default()
             }
         } else {

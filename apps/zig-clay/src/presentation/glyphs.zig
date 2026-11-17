@@ -19,6 +19,18 @@ pub const eye_slash = "\u{F070}";
 pub const chevron_right = "\u{F054}";
 pub const warning = "\u{F071}";
 
+/// Optical-centre correction in em (`design/tokens.json` → `glyphCentering`).
+/// Nerd Font icons overflow their advance width to the right; shift them
+/// left by `opticalOffset(glyph) * font size` to centre them in a button.
+pub fn opticalOffset(glyph: []const u8) f32 {
+    const table = .{
+        .{ back, 0.094 },    .{ forward, 0.094 }, .{ up, 0.036 },
+        .{ refresh, 0.122 }, .{ eye, 0.209 },     .{ eye_slash, 0.268 },
+    };
+    inline for (table) |entry| if (std.mem.eql(u8, glyph, entry[0])) return entry[1];
+    return 0;
+}
+
 pub const Icon = struct { glyph: []const u8, color: cl.Color };
 
 /// Every non-ASCII codepoint the UI may draw; raylib bakes these into the

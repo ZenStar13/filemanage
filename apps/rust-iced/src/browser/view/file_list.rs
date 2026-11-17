@@ -3,7 +3,9 @@ use fm_ui_kit::tokens::{layout, size, spacing};
 use fm_ui_kit::{format, glyphs};
 use iced::alignment::{Horizontal, Vertical};
 use iced::widget::text::Wrapping;
-use iced::widget::{Column, button, center, container, mouse_area, row, scrollable, text};
+use iced::widget::{
+    Column, button, center, column, container, mouse_area, row, scrollable, space, stack, text,
+};
 use iced::{Element, Fill, FillPortion, Length, mouse};
 
 use crate::browser::Browser;
@@ -14,6 +16,7 @@ use crate::theme::{font, palette, style};
 const SIZE_WIDTH: f32 = 110.0;
 const MODIFIED_WIDTH: f32 = 160.0;
 const KIND_WIDTH: f32 = 150.0;
+const HEADER_HEIGHT: f32 = layout::ROW_HEIGHT + 4.0;
 
 pub fn view(browser: &Browser) -> Element<'_, Message> {
     let mut content = Column::new().width(Fill).height(Fill);
@@ -21,8 +24,6 @@ pub fn view(browser: &Browser) -> Element<'_, Message> {
     if let Some(error) = &browser.error {
         content = content.push(container(error_banner(error.to_string())).padding(spacing::SM));
     }
-
-    content = content.push(header());
 
     let entries = browser.visible_entries();
     let body: Element<'_, Message> = if entries.is_empty() {
@@ -34,7 +35,9 @@ pub fn view(browser: &Browser) -> Element<'_, Message> {
             .height(Fill)
             .into()
     };
-    content.push(body).into()
+    // The header is one elevation above the rows: a later stack layer, so its
+    // shadow falls onto the list.
+    content.push(stack![column![space().height(HEADER_HEIGHT), body], header()]).into()
 }
 
 fn header() -> Element<'static, Message> {
@@ -47,9 +50,11 @@ fn header() -> Element<'static, Message> {
             cell("Kind").width(Length::Fixed(KIND_WIDTH)),
         ]
         .spacing(spacing::MD)
-        .padding([spacing::SM, spacing::MD + spacing::SM]),
+        .padding([0.0, spacing::MD + spacing::SM]),
     )
     .width(Fill)
+    .height(HEADER_HEIGHT)
+    .align_y(Vertical::Center)
     .style(style::header_row)
     .into()
 }

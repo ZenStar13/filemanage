@@ -1,4 +1,4 @@
-import { Palette, Typography, Metrics } from "../theme.slint";
+import { Palette, Typography, Metrics, Elevation } from "../theme.slint";
 import { BrowserViewModel } from "../view-model.slint";
 
 component PlaceTile inherits Rectangle {
@@ -40,7 +40,10 @@ component PlaceTile inherits Rectangle {
 
 export component Sidebar inherits Rectangle {
     width: Metrics.sidebar-width;
-    background: Palette.surface;
+    background: Elevation.sidebar-surface;
+    drop-shadow-offset-x: Elevation.sidebar-shadow-x;
+    drop-shadow-blur: Elevation.sidebar-shadow-blur;
+    drop-shadow-color: Elevation.sidebar-shadow;
 
     VerticalLayout {
         padding: Metrics.sm;

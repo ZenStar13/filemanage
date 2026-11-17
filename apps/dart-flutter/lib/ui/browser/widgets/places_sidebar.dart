@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../domain/models/place.dart';
+import '../../core/theme/app_elevation.dart';
 import '../../core/theme/app_glyphs.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/dimens.dart';
@@ -18,7 +19,10 @@ class PlacesSidebar extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: Dimens.sidebarWidth,
-      color: palette.chrome,
+      decoration: BoxDecoration(
+        color: AppElevation.sidebar.surface,
+        boxShadow: AppElevation.sidebar.shadows,
+      ),
       padding: const EdgeInsets.all(Dimens.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

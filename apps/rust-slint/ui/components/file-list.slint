@@ -1,5 +1,5 @@
 import { ListView } from "std-widgets.slint";
-import { Palette, Typography, Metrics, Tones, Glyphs } from "../theme.slint";
+import { Palette, Typography, Metrics, Tones, Glyphs, Elevation } from "../theme.slint";
 import { BrowserViewModel, EntryRow } from "../view-model.slint";
 
 global Columns {
@@ -90,9 +90,14 @@ export component FileList inherits Rectangle {
 
     VerticalLayout {
         // Column header
+        // Elevation 1: z above the list so the shadow falls onto the rows.
         Rectangle {
+            z: 1;
             height: Metrics.row-height + 4px;
-            background: Palette.surface-raised;
+            background: Elevation.header-surface;
+            drop-shadow-offset-y: Elevation.header-shadow-y;
+            drop-shadow-blur: Elevation.header-shadow-blur;
+            drop-shadow-color: Elevation.header-shadow;
             HorizontalLayout {
                 padding-left: Metrics.md + Metrics.sm;
                 padding-right: Metrics.md + Metrics.sm;

@@ -9,6 +9,8 @@ const Frame = @This();
 /// Toolkit-agnostic snapshot of this frame's input, filled by the platform.
 pub const Input = struct {
     clicked: bool = false,
+    /// Primary button currently held (pressed buttons render flat).
+    pointer_down: bool = false,
     double_clicked: bool = false,
     keys: Keys = .{},
 

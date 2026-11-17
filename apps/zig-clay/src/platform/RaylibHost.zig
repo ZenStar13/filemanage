@@ -8,6 +8,7 @@ const renderer = @import("renderer_raylib");
 const Frame = @import("../presentation/Frame.zig");
 const glyphs = @import("../presentation/glyphs.zig");
 const theme = @import("../presentation/theme.zig");
+const elevation = @import("../presentation/elevation.zig");
 
 const RaylibHost = @This();
 
@@ -63,7 +64,7 @@ pub fn sampleInput(self: *RaylibHost) Frame.Input {
     cl.updateScrollContainers(false, .{ .x = wheel.x * 40, .y = wheel.y * 40 }, rl.getFrameTime());
     cl.setLayoutDimensions(.{ .w = @floatFromInt(rl.getScreenWidth()), .h = @floatFromInt(rl.getScreenHeight()) });
 
-    var input: Frame.Input = .{};
+    var input: Frame.Input = .{ .pointer_down = rl.isMouseButtonDown(.left) };
     if (rl.isMouseButtonPressed(.left)) {
         const now = rl.getTime();
         const near = mouse.distance(self.last_click_pos) <= double_click_distance;
@@ -111,8 +112,64 @@ pub fn present(_: *RaylibHost, commands: []cl.RenderCommand, pointer_cursor: boo
     rl.setMouseCursor(if (pointer_cursor) .pointing_hand else .default);
     rl.beginDrawing();
     rl.clearBackground(renderer.raylibColorFromClayColor(theme.palette.background));
-    renderer.render(commands);
+    render(commands);
     rl.endDrawing();
+}
+
+/// Clay → raylib, adding elevation: `custom` commands carrying a shadow are
+/// drawn here, and elements whose `user_data` is a shadow get it drawn just
+/// before them (so it sits underneath). Everything else goes to zclay's
+/// stock raylib renderer.
+fn render(commands: []cl.RenderCommand) void {
+    for (commands, 0..) |*command, i| {
+        if (command.command_type == .custom) {
+            if (command.render_data.custom.custom_data) |data| drawShadow(castOf(data), command.bounding_box);
+            continue;
+        }
+        if (command.command_type == .rectangle) {
+            if (command.user_data) |data| drawShadow(castOf(data), command.bounding_box);
+        }
+        renderer.render(commands[i .. i + 1]);
+    }
+}
+
+fn castOf(data: *anyopaque) *const elevation.Cast {
+    return @ptrCast(@alignCast(data));
+}
+
+fn black(alpha: f32) rl.Color {
+    return .{ .r = 0, .g = 0, .b = 0, .a = @intFromFloat(@round(alpha * 255)) };
+}
+
+fn drawShadow(cast: *const elevation.Cast, box: cl.BoundingBox) void {
+    const s = cast.shadow;
+    const x: i32 = @intFromFloat(@round(box.x));
+    const y: i32 = @intFromFloat(@round(box.y));
+    const w: i32 = @intFromFloat(@round(box.width));
+    const h: i32 = @intFromFloat(@round(box.height));
+    switch (cast.direction) {
+        // Strips start dark at the caster's edge and fade out over the blur.
+        .right => rl.drawRectangleGradientH(x, y, w, h, black(s.alpha), black(0)),
+        .down => rl.drawRectangleGradientV(x, y, w, h, black(s.alpha), black(0)),
+        // Approximate a Gaussian blur with stacked, growing rounded rects.
+        .under => {
+            const steps: usize = @intFromFloat(@max(1, @ceil(s.blur)));
+            const layer_alpha = s.alpha / @as(f32, @floatFromInt(steps));
+            var i: usize = steps;
+            while (i >= 1) : (i -= 1) {
+                const grow: f32 = @as(f32, @floatFromInt(i)) - 1;
+                const rect: rl.Rectangle = .{
+                    .x = box.x + s.x - grow,
+                    .y = box.y + s.y - grow + 1,
+                    .width = box.width + 2 * grow,
+                    .height = box.height + 2 * grow - 1,
+                };
+                const radius = cast.corner_radius + grow;
+                const roundness = @min(1, 2 * radius / @min(rect.width, rect.height));
+                rl.drawRectangleRounded(rect, roundness, 8, black(layer_alpha));
+            }
+        },
+    }
 }
 
 /// While a load is in flight there may be no input to wake us; poll instead.

@@ -28,6 +28,7 @@ filemanage/
 ├── assets/fonts/             0xProto Nerd Font (Regular/Bold/Italic) + OFL licence
 ├── docs/
 │   ├── ARCHITECTURE.md       shared feature scope, layers, MVVM-per-paradigm, palette roles
+│   ├── ELEVATION.md          depth/elevation change: cost and approach per stack
 │   └── screenshots/
 ├── libs/rust/
 │   ├── fm-core/              shared Rust domain + use cases + filesystem adapters
@@ -40,6 +41,8 @@ filemanage/
 
 Every app has its own README with its folder structure and stack-specific
 notes. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains the shared design.
+[docs/ELEVATION.md](docs/ELEVATION.md) compares what it took to add depth
+(elevation, shadows) to each stack.
 
 ## Build & run
 

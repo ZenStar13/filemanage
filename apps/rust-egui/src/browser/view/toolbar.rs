@@ -1,7 +1,9 @@
-use egui::{Button, Frame, Layout, Margin, RichText, Stroke, Ui, vec2};
+use egui::{Align2, Button, Color32, FontId, Frame, Layout, Margin, Response, RichText, Stroke, Ui, vec2};
 use fm_ui_kit::glyphs;
+use fm_ui_kit::tokens::elevation::BUTTON;
 use fm_ui_kit::tokens::size;
 
+use super::elevation;
 use crate::browser::{BrowserViewModel, Intent};
 use crate::theme::palette;
 
@@ -25,21 +27,45 @@ pub fn show(ui: &mut Ui, vm: &BrowserViewModel, intents: &mut Vec<Intent>) {
 
 fn tool(ui: &mut Ui, glyph: &str, hint: &str, enabled: bool, intent: Intent, intents: &mut Vec<Intent>) {
     let color = if enabled { palette::AQUA } else { palette::BORDER };
-    let button = Button::new(RichText::new(glyph).color(color).size(size::FONT_BODY)).min_size(TOOL_SIZE);
-    if ui.add_enabled(enabled, button).on_hover_text(hint).clicked() {
+    if glyph_button(ui, glyph, color, None, enabled).on_hover_text(hint).clicked() {
         intents.push(intent);
     }
 }
 
+/// A raised button showing an optically-centred Nerd Font glyph.
+///
+/// The glyph is painted manually because egui centres text by its advance
+/// width, while Nerd Font icons overflow it to the right.
+fn glyph_button(ui: &mut Ui, glyph: &str, color: Color32, fill: Option<Color32>, enabled: bool) -> Response {
+    let shadow_slot = elevation::reserve(ui);
+    let mut button = Button::new("").min_size(TOOL_SIZE);
+    if let Some(fill) = fill {
+        button = button.fill(fill);
+    }
+    let response = ui.add_enabled(enabled, button);
+    // Raised unless disabled or being pressed (pushed onto the toolbar).
+    if enabled && !response.is_pointer_button_down_on() {
+        elevation::under(ui, shadow_slot, response.rect, BUTTON, 8);
+    }
+    let shift = glyphs::optical_offset(glyph) * size::FONT_BODY;
+    let color = if response.hovered() && fill.is_none() { palette::AQUA } else { color };
+    ui.painter().text(
+        response.rect.center() - vec2(shift, 0.0),
+        Align2::CENTER_CENTER,
+        glyph,
+        FontId::proportional(size::FONT_BODY),
+        color,
+    );
+    response
+}
+
 fn hidden_toggle(ui: &mut Ui, active: bool, intents: &mut Vec<Intent>) {
     let (glyph, text, fill) = if active {
-        (glyphs::EYE, palette::TEXT_ON_AQUA, palette::AQUA)
+        (glyphs::EYE, palette::TEXT_ON_AQUA, Some(palette::AQUA))
     } else {
-        (glyphs::EYE_SLASH, palette::AQUA, palette::SURFACE_RAISED)
+        (glyphs::EYE_SLASH, palette::AQUA, None)
     };
-    let button =
-        Button::new(RichText::new(glyph).color(text).size(size::FONT_BODY)).fill(fill).min_size(TOOL_SIZE);
-    if ui.add(button).on_hover_text("Show hidden files (Ctrl+H)").clicked() {
+    if glyph_button(ui, glyph, text, fill, true).on_hover_text("Show hidden files (Ctrl+H)").clicked() {
         intents.push(Intent::ToggleHidden);
     }
 }

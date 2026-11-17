@@ -8,6 +8,7 @@ use egui::{
     Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals,
 };
 use fm_ui_kit::glyphs::IconTone;
+use fm_ui_kit::tokens::elevation::{self, Level};
 use fm_ui_kit::tokens::{Rgb, color, radius, size, spacing};
 
 pub const fn rgb(c: Rgb) -> Color32 {
@@ -31,6 +32,17 @@ pub mod palette {
     pub const TEXT_SECONDARY: Color32 = rgb(color::TEXT_SECONDARY);
     pub const TEXT_ON_AQUA: Color32 = rgb(color::TEXT_ON_AQUA);
     pub const DANGER: Color32 = rgb(color::DANGER);
+}
+
+/// egui shadow for an elevation level (offset/blur are whole pixels in egui).
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)] // Small token values.
+pub fn shadow(level: Level) -> Option<Shadow> {
+    level.shadow.map(|s| Shadow {
+        offset: [s.x as i8, s.y as i8],
+        blur: s.blur as u8,
+        spread: 0,
+        color: Color32::from_black_alpha((s.alpha * 255.0) as u8),
+    })
 }
 
 /// Font family names registered in egui.
@@ -99,8 +111,8 @@ fn visuals() -> Visuals {
     let w = &mut v.widgets;
     w.noninteractive.bg_stroke = Stroke::new(1.0, palette::BORDER);
     w.noninteractive.fg_stroke = Stroke::new(1.0, palette::TEXT_PRIMARY);
-    w.inactive.weak_bg_fill = palette::SURFACE_RAISED;
-    w.inactive.bg_fill = palette::SURFACE_RAISED;
+    w.inactive.weak_bg_fill = rgb(elevation::BUTTON.surface);
+    w.inactive.bg_fill = rgb(elevation::BUTTON.surface);
     w.inactive.bg_stroke = Stroke::new(1.0, palette::BORDER);
     w.inactive.fg_stroke = Stroke::new(1.0, palette::AQUA);
     w.inactive.corner_radius = r;

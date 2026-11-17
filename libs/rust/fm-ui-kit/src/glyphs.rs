@@ -87,3 +87,19 @@ pub fn for_place(kind: PlaceKind) -> &'static str {
         PlaceKind::Root => ROOT,
     }
 }
+
+/// Optical-centre correction in em (`design/tokens.json` → `glyphCentering`).
+///
+/// Nerd Font icons are wider than their advance width, so their ink sits to
+/// the right of where a toolkit centres the glyph. Shift the glyph *left* by
+/// `optical_offset(glyph) * font_size` pixels to centre it inside a button.
+pub fn optical_offset(glyph: &str) -> f32 {
+    match glyph {
+        BACK | FORWARD => 0.094,
+        UP => 0.036,
+        REFRESH => 0.122,
+        EYE => 0.209,
+        EYE_SLASH => 0.268,
+        _ => 0.0,
+    }
+}

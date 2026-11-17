@@ -43,6 +43,7 @@ void FileTable::draw(const BrowserViewModel& vm, ActionQueue& actions, const Fon
                                        ImGuiTableFlags_Resizable | ImGuiTableFlags_BordersInnerV |
                                        ImGuiTableFlags_PadOuterX | ImGuiTableFlags_NoSavedSettings;
 
+    headerRect_.reset();
     if (!ImGui::BeginTable("##entries", 4, kFlags, ImGui::GetContentRegionAvail())) {
         return;
     }
@@ -60,6 +61,12 @@ void FileTable::draw(const BrowserViewModel& vm, ActionQueue& actions, const Fon
         ImGui::TableSetColumnIndex(column);
         ImGui::Dummy({0, 4}); // vertical centering without moving the cursor manually
         ImGui::TableHeader(ImGui::TableGetColumnName(column));
+    }
+    {
+        // The header row spans the table's full width at the top of the table.
+        const ImVec2 pos = ImGui::GetWindowPos();
+        headerRect_ =
+            Rect{.min = pos, .max = {pos.x + ImGui::GetWindowWidth(), pos.y + kHeaderHeight}};
     }
     ImGui::PopStyleColor();
     ImGui::PopFont();

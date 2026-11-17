@@ -5,6 +5,8 @@
 #include "presentation/viewmodel/BrowserViewModel.hpp"
 
 #include <cstdint>
+#include <imgui.h>
+#include <optional>
 
 /// Sub-views of the browser screen. Each is a pure function of the (const)
 /// view model that records user intents into the action queue.
@@ -21,7 +23,15 @@ class FileTable {
   public:
     void draw(const BrowserViewModel& vm, ActionQueue& actions, const Fonts& fonts);
 
+    /// Screen rect of the column header drawn this frame (for its shadow).
+    struct Rect {
+        ImVec2 min;
+        ImVec2 max;
+    };
+    [[nodiscard]] const std::optional<Rect>& headerRect() const { return headerRect_; }
+
   private:
+    std::optional<Rect> headerRect_;
     std::uint64_t revealedRevision_{0};
 };
 

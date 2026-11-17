@@ -27,6 +27,17 @@ abstract final class AppGlyphs {
   static const chevronRight = '\u{F054}';
   static const warning = '\u{F071}';
 
+  /// Optical-centre correction in em (`design/tokens.json` →
+  /// `glyphCentering`): how far to shift a glyph left to centre its ink.
+  static double opticalOffset(String glyph) => switch (glyph) {
+    back || forward => 0.094,
+    up => 0.036,
+    refresh => 0.122,
+    eye => 0.209,
+    eyeSlash => 0.268,
+    _ => 0,
+  };
+
   static String forPlace(PlaceKind kind) => switch (kind) {
     PlaceKind.home => '\u{F015}',
     PlaceKind.desktop => '\u{F108}',

@@ -46,6 +46,7 @@ fm_set_warnings(fm_infrastructure)
 add_library(fm_presentation STATIC
     src/presentation/theme/Theme.cpp
     src/presentation/theme/Glyphs.cpp
+    src/presentation/theme/Elevation.cpp
     src/presentation/Format.cpp
     src/presentation/viewmodel/DirectoryLoader.cpp
     src/presentation/viewmodel/BrowserViewModel.cpp
