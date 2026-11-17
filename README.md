@@ -72,7 +72,15 @@ Release builds, measured on the same Linux machine (Xvfb with Mesa software
 rendering, so absolute memory is higher than on a real GPU; compare them
 relative to each other).
 
-<!-- METRICS -->
+| | Flutter | iced | Dear ImGui | egui | Slint | Zig + Clay |
+|---|---|---|---|---|---|---|
+| Release artefact | 29 MB bundle (engine + ICU + AOT) | 19 MB | **1.4 MB** + 2.4 MB font file | 13 MB | 24 MB | 14 MB (ReleaseSafe) |
+| Time to window | 0.34 s | 0.17 s | **0.06 s** | 0.12 s | 0.17 s | 0.12 s |
+| Resident memory, idle home folder | 270 MB | 149 MB | **109 MB** | 113 MB | 138 MB | 126 MB |
+
+The Rust and Zig binaries embed the Regular and Bold fonts (~5 MB). Rust
+binaries are stripped, with thin LTO. Startup and memory were measured once each, as
+an indication rather than a benchmark.
 
 Lines of code (non-blank), app-specific only:
 
