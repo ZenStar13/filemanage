@@ -1,0 +1,20 @@
+[package]
+name = "fm-egui"
+description = "File manager front-end built with egui/eframe (immediate mode)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "fm-egui"
+path = "src/main.rs"
+
+[dependencies]
+fm-core.workspace = true
+fm-ui-kit.workspace = true
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+egui_extras = { version = "0.37" }
+
+[lints]
+workspace = true

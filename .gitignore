@@ -1,0 +1,20 @@
+# Rust
+/target/
+
+# C++ / CMake
+build/
+cmake-build-*/
+
+# Zig
+.zig-cache/
+zig-out/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins-dependencies
+apps/dart-flutter/build/
+
+# Editors
+.idea/
+.vscode/
+*.iml

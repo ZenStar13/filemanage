@@ -1,0 +1,32 @@
+name: file_manager
+description: "File manager first draft — Flutter front-end (MVVM, Flutter app architecture guide)."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.14.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_ui: ^1.1.0
+  path: ^1.9.1
+  provider: ^6.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  # `assets/fonts` is a symlink to the repository-wide `assets/fonts` folder so
+  # every app ships the exact same font files.
+  fonts:
+    - family: 0xProto Nerd Font
+      fonts:
+        - asset: assets/fonts/0xProtoNerdFont-Regular.ttf
+        - asset: assets/fonts/0xProtoNerdFont-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/0xProtoNerdFont-Italic.ttf
+          style: italic

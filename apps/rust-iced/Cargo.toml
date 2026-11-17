@@ -1,0 +1,19 @@
+[package]
+name = "fm-iced"
+description = "File manager front-end built with iced (The Elm Architecture)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "fm-iced"
+path = "src/main.rs"
+
+[dependencies]
+fm-core.workspace = true
+fm-ui-kit.workspace = true
+iced = { version = "0.14" }
+
+[lints]
+workspace = true
