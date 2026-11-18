@@ -16,4 +16,11 @@ pub enum Intent {
     MoveSelection(isize),
     ToggleHidden,
     DismissError,
+    Home,
+    /// Location row: switch the breadcrumbs to a text input (Ctrl+L).
+    StartEditLocation,
+    EditLocation(String),
+    SubmitLocation,
+    /// Escape: leave location editing, otherwise dismiss the error banner.
+    Cancel,
 }

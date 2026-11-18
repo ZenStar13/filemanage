@@ -3,11 +3,13 @@
 use fm_core::application::{BrowseDirectory, ListPlaces};
 
 use crate::browser::{BrowserViewModel, view};
+use crate::chrome::Chrome;
 use crate::theme;
 
 #[derive(Debug)]
 pub struct FileManagerApp {
     browser: BrowserViewModel,
+    chrome: Chrome,
 }
 
 impl FileManagerApp {
@@ -16,7 +18,7 @@ impl FileManagerApp {
         // Background loads wake the UI thread when they finish.
         let ctx = cc.egui_ctx.clone();
         let waker = move || ctx.request_repaint();
-        Self { browser: BrowserViewModel::new(browse, places, waker) }
+        Self { browser: BrowserViewModel::new(browse, places, waker), chrome: Chrome::default() }
     }
 }
 
@@ -25,11 +27,14 @@ impl eframe::App for FileManagerApp {
         // 1. Integrate finished background work.
         self.browser.poll();
         // 2. Build the frame; views only *describe* what the user asked for.
-        let intents = view::show(ui, &self.browser);
+        let output = view::show(ui, &self.browser, self.chrome.about_open);
         // 3. Apply intents; changes become visible next frame.
-        let changed = !intents.is_empty();
-        for intent in intents {
+        let changed = !output.intents.is_empty() || !output.chrome.is_empty();
+        for intent in output.intents {
             self.browser.apply(intent);
+        }
+        for intent in output.chrome {
+            self.chrome.apply(ui.ctx(), intent);
         }
         if changed {
             ui.ctx().request_repaint();

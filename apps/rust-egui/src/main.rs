@@ -7,6 +7,7 @@
 
 mod app;
 mod browser;
+mod chrome;
 mod theme;
 
 use std::sync::Arc;
@@ -22,7 +23,9 @@ fn main() -> eframe::Result {
         viewport: egui::ViewportBuilder::default()
             .with_title("Files (egui)")
             .with_inner_size([1100.0, 700.0])
-            .with_min_inner_size([640.0, 400.0]),
+            .with_min_inner_size([640.0, 400.0])
+            // Client-side decorations: our own title bar, menus and controls.
+            .with_decorations(false),
         ..Default::default()
     };
 

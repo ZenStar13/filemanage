@@ -39,6 +39,9 @@ pub struct BrowserViewModel {
     loading: bool,
     ticket: u64,
     reveal_selection: bool,
+    home: DirectoryPath,
+    /// `Some(draft)` while the location row is a text input.
+    location_draft: Option<String>,
     sender: Sender<Loaded>,
     receiver: Receiver<Loaded>,
     waker: std::sync::Arc<Waker>,
@@ -71,6 +74,8 @@ impl BrowserViewModel {
             loading: false,
             ticket: 0,
             reveal_selection: false,
+            home: places.start_location(),
+            location_draft: None,
             sender,
             receiver,
             waker: std::sync::Arc::new(Box::new(waker)),
@@ -113,6 +118,10 @@ impl BrowserViewModel {
     }
     pub fn can_go_up(&self) -> bool {
         self.history.can_go_up()
+    }
+    /// The path being typed, while the location row is in edit mode.
+    pub fn location_draft(&self) -> Option<&str> {
+        self.location_draft.as_deref()
     }
     /// Index of the selection when it was just moved with the keyboard and
     /// should be scrolled into view.
@@ -157,6 +166,22 @@ impl BrowserViewModel {
             Intent::MoveSelection(delta) => self.move_selection(delta),
             Intent::ToggleHidden => self.visibility = self.visibility.toggled(),
             Intent::DismissError => self.error = None,
+            Intent::Home => self.load(self.home.clone(), Navigation::Visit),
+            Intent::StartEditLocation => self.location_draft = Some(self.history.current().to_string()),
+            Intent::EditLocation(draft) => self.location_draft = Some(draft),
+            Intent::SubmitLocation => {
+                let draft = self.location_draft.take().unwrap_or_default();
+                if let Some(path) =
+                    DirectoryPath::resolve_user_input(&draft, self.history.current(), &self.home)
+                {
+                    self.load(path, Navigation::Visit);
+                }
+            }
+            Intent::Cancel => {
+                if self.location_draft.take().is_none() {
+                    self.error = None;
+                }
+            }
         }
     }
 
@@ -177,6 +202,7 @@ impl BrowserViewModel {
                         Navigation::Reload => {}
                     }
                     self.listing = Some(listing);
+                    self.location_draft = None;
                     self.selected = None;
                     self.error = None;
                 }

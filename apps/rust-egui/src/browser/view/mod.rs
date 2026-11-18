@@ -9,15 +9,34 @@ mod status_bar;
 mod toolbar;
 
 use egui::{CentralPanel, Frame, Margin, Panel};
-use fm_ui_kit::tokens::elevation::{HEADER, SIDEBAR, TOOLBAR};
+use fm_ui_kit::tokens::elevation::{HEADER, SIDEBAR, TITLE_BAR, TOOLBAR};
 use fm_ui_kit::tokens::layout;
 
 use super::{BrowserViewModel, Intent};
+use crate::chrome::{self, ChromeIntent};
 use crate::theme::{palette, rgb};
 
+/// What the user asked for this frame: browser intents for the view model,
+/// chrome intents for the window.
+#[derive(Debug, Default)]
+pub struct Output {
+    pub intents: Vec<Intent>,
+    pub chrome: Vec<ChromeIntent>,
+}
+
 /// Builds the whole screen for this frame and returns the user's intents.
-pub fn show(ui: &mut egui::Ui, vm: &BrowserViewModel) -> Vec<Intent> {
-    let mut intents = shortcuts::read(ui.ctx());
+pub fn show(ui: &mut egui::Ui, vm: &BrowserViewModel, about_open: bool) -> Output {
+    let (mut intents, mut window) = shortcuts::read(ui.ctx(), vm.location_draft().is_some());
+    let maximized = chrome::is_maximized(ui.ctx());
+
+    // Outermost panel first, so the title bar spans the full width.
+    let title_bar = Panel::top("title-bar")
+        .exact_size(layout::TITLE_BAR_HEIGHT)
+        .show_separator_line(false)
+        .frame(Frame::new().fill(rgb(TITLE_BAR.surface)))
+        .show(ui, |ui| chrome::title_bar(ui, vm, maximized, &mut intents, &mut window))
+        .response
+        .rect;
 
     Panel::bottom("status")
         .exact_size(layout::STATUS_BAR_HEIGHT)
@@ -58,6 +77,12 @@ pub fn show(ui: &mut egui::Ui, vm: &BrowserViewModel) -> Vec<Intent> {
     let right_of_sidebar =
         egui::Rect::from_min_max(sidebar.right_top(), ctx.content_rect().max).with_max_y(sidebar.bottom());
     elevation::cast(ctx, "sidebar", sidebar, SIDEBAR, right_of_sidebar);
+    let below_title = egui::Rect::from_min_max(title_bar.left_bottom(), ctx.content_rect().max);
+    elevation::cast(ctx, "title-bar", title_bar, TITLE_BAR, below_title);
 
-    intents
+    chrome::about_dialog(ctx, about_open, &mut window);
+    if !maximized {
+        chrome::resize_edges(ctx, &mut window);
+    }
+    Output { intents, chrome: window }
 }
