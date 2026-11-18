@@ -25,6 +25,77 @@ component CrumbButton inherits Rectangle {
     }
 }
 
+// Location row: breadcrumbs inside an inset field. Clicking the field, the
+// pencil, or Ctrl+L switches it to a text input; Enter navigates, Escape or
+// clicking away cancels.
+component LocationField inherits Rectangle {
+    property <bool> editing: BrowserViewModel.editing-location;
+
+    public function submit() {
+        BrowserViewModel.submit-location(input.text);
+    }
+
+    height: Metrics.location-field-height;
+    border-radius: Metrics.radius-md;
+    background: Palette.location-surface;
+    border-width: editing ? 2px : 1px;
+    border-color: editing ? Palette.aqua : Palette.border;
+
+    // Entering edit mode: prefill with the current path, focus, select all.
+    changed editing => {
+        if self.editing {
+            input.text = BrowserViewModel.current-path;
+            input.focus();
+            input.select-all();
+        }
+    }
+
+    if !root.editing: TouchArea {
+        mouse-cursor: text;
+        clicked => { BrowserViewModel.start-edit-location(); }
+    }
+
+    HorizontalLayout {
+        visible: !root.editing;
+        padding-left: Metrics.xs;
+        spacing: Metrics.xs;
+        alignment: start;
+        for crumb[index] in BrowserViewModel.breadcrumbs: HorizontalLayout {
+            spacing: Metrics.xs;
+            if index > 1: Text {
+                text: Glyphs.chevron-right;
+                font-size: 11px;
+                color: Palette.purple;
+                vertical-alignment: center;
+            }
+            VerticalLayout {
+                alignment: center;
+                CrumbButton {
+                    label: crumb.label;
+                    current: crumb.current;
+                    clicked => { BrowserViewModel.open-crumb(index); }
+                }
+            }
+        }
+    }
+
+    input := TextInput {
+        visible: root.editing;
+        x: Metrics.sm;
+        width: parent.width - 2 * Metrics.sm;
+        vertical-alignment: center;
+        single-line: true;
+        color: Palette.text-primary;
+        selection-background-color: Palette.aqua-muted;
+        font-size: Typography.body;
+        accepted => { BrowserViewModel.submit-location(self.text); }
+        changed has-focus => {
+            if !self.has-focus && root.editing { BrowserViewModel.cancel(); }
+        }
+    }
+}
+
+// Toolbar (elevation 2): an action row and a location row.
 export component Toolbar inherits Rectangle {
     height: Metrics.toolbar-height;
     background: Elevation.toolbar-surface;
@@ -32,61 +103,56 @@ export component Toolbar inherits Rectangle {
     drop-shadow-blur: Elevation.toolbar-shadow-blur;
     drop-shadow-color: Elevation.toolbar-shadow;
 
-    HorizontalLayout {
+    VerticalLayout {
         padding-left: Metrics.md;
         padding-right: Metrics.md;
-        spacing: Metrics.xs;
 
-        VerticalLayout { alignment: center; IconButton {
-            glyph: Glyphs.back; tooltip: "Back (Alt+←)"; enabled: BrowserViewModel.can-go-back;
-            clicked => { BrowserViewModel.go-back(); }
-        } }
-        VerticalLayout { alignment: center; IconButton {
-            glyph: Glyphs.forward; tooltip: "Forward (Alt+→)"; enabled: BrowserViewModel.can-go-forward;
-            clicked => { BrowserViewModel.go-forward(); }
-        } }
-        VerticalLayout { alignment: center; IconButton {
-            glyph: Glyphs.up; tooltip: "Up (Backspace)"; enabled: BrowserViewModel.can-go-up;
-            clicked => { BrowserViewModel.go-up(); }
-        } }
-        VerticalLayout { alignment: center; IconButton {
-            glyph: Glyphs.refresh; tooltip: "Refresh (F5)";
-            clicked => { BrowserViewModel.refresh(); }
-        } }
-
-        Rectangle { width: Metrics.sm; }
-
-        // Breadcrumbs: `/ › home › user`
         HorizontalLayout {
-            horizontal-stretch: 1;
+            height: Metrics.action-row-height;
             spacing: Metrics.xs;
-            alignment: start;
-            for crumb[index] in BrowserViewModel.breadcrumbs: HorizontalLayout {
-                spacing: Metrics.xs;
-                if index > 1: Text {
-                    text: Glyphs.chevron-right;
-                    font-size: 11px;
-                    color: Palette.purple;
-                    vertical-alignment: center;
-                }
-                VerticalLayout {
-                    alignment: center;
-                    CrumbButton {
-                        label: crumb.label;
-                        current: crumb.current;
-                        clicked => { BrowserViewModel.open-crumb(index); }
-                    }
-                }
-            }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: Glyphs.back; tooltip: "Back (Alt+←)"; enabled: BrowserViewModel.can-go-back;
+                clicked => { BrowserViewModel.go-back(); }
+            } }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: Glyphs.forward; tooltip: "Forward (Alt+→)"; enabled: BrowserViewModel.can-go-forward;
+                clicked => { BrowserViewModel.go-forward(); }
+            } }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: Glyphs.up; tooltip: "Up (Backspace)"; enabled: BrowserViewModel.can-go-up;
+                clicked => { BrowserViewModel.go-up(); }
+            } }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: Glyphs.refresh; tooltip: "Refresh (F5)";
+                clicked => { BrowserViewModel.refresh(); }
+            } }
+            Rectangle { horizontal-stretch: 1; }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: BrowserViewModel.shows-hidden ? Glyphs.eye : Glyphs.eye-slash;
+                tooltip: "Show hidden files (Ctrl+H)";
+                active: BrowserViewModel.shows-hidden;
+                tooltip-at-end: true;
+                clicked => { BrowserViewModel.toggle-hidden(); }
+            } }
         }
 
-        VerticalLayout { alignment: center; IconButton {
-            glyph: BrowserViewModel.shows-hidden ? Glyphs.eye : Glyphs.eye-slash;
-            tooltip: "Show hidden files (Ctrl+H)";
-            active: BrowserViewModel.shows-hidden;
-            tooltip-at-end: true;
-            clicked => { BrowserViewModel.toggle-hidden(); }
-        } }
+        HorizontalLayout {
+            height: Metrics.location-row-height;
+            padding-bottom: 6px;
+            spacing: Metrics.sm;
+            location := LocationField { horizontal-stretch: 1; }
+            VerticalLayout { alignment: center; IconButton {
+                glyph: BrowserViewModel.editing-location ? Glyphs.forward : Glyphs.edit;
+                tooltip: BrowserViewModel.editing-location ? "Go (Enter)" : "Type a location (Ctrl+L)";
+                tooltip-at-end: true;
+                clicked => {
+                    if BrowserViewModel.editing-location {
+                        location.submit();
+                    } else {
+                        BrowserViewModel.start-edit-location();
+                    }
+                }
+            } }
+        }
     }
-
 }

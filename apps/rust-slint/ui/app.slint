@@ -7,8 +7,9 @@ import { Sidebar } from "components/sidebar.slint";
 import { FileList } from "components/file-list.slint";
 import { StatusBar, ErrorBanner } from "components/status-bar.slint";
 import { TooltipOverlay } from "components/tooltip.slint";
+import { TitleBar, ResizeEdges, AboutOverlay, WindowChrome, ChromeState } from "components/chrome.slint";
 
-export { BrowserViewModel, EntryRow, PlaceItem, Crumb }
+export { BrowserViewModel, EntryRow, PlaceItem, Crumb, WindowChrome }
 export { IconTone } from "theme.slint";
 
 export component AppWindow inherits Window {
@@ -17,6 +18,8 @@ export component AppWindow inherits Window {
     preferred-height: 700px;
     min-width: 640px;
     min-height: 400px;
+    // Client-side decorations: our own title bar, menus and controls.
+    no-frame: true;
     background: Palette.background;
     default-font-family: Typography.family;
     default-font-size: Typography.body;
@@ -24,20 +27,30 @@ export component AppWindow inherits Window {
 
     keys := FocusScope {
         key-pressed(event) => {
+            if event.text == Key.Escape {
+                if ChromeState.about-open { ChromeState.about-open = false; return accept; }
+                BrowserViewModel.cancel(); return accept;
+            }
+            if event.modifiers.control && (event.text == "q" || event.text == "Q") { WindowChrome.close(); return accept; }
+            if event.modifiers.control && (event.text == "l" || event.text == "L") { BrowserViewModel.start-edit-location(); return accept; }
             if event.modifiers.alt && event.text == Key.LeftArrow { BrowserViewModel.go-back(); return accept; }
             if event.modifiers.alt && event.text == Key.RightArrow { BrowserViewModel.go-forward(); return accept; }
             if event.modifiers.alt && event.text == Key.UpArrow { BrowserViewModel.go-up(); return accept; }
-            if event.text == Key.Backspace { BrowserViewModel.go-up(); return accept; }
+            if event.modifiers.alt && event.text == Key.Home { BrowserViewModel.go-home(); return accept; }
             if event.text == Key.F5 { BrowserViewModel.refresh(); return accept; }
             if event.modifiers.control && (event.text == "h" || event.text == "H") { BrowserViewModel.toggle-hidden(); return accept; }
+            // Keys the location input also uses are left alone while typing.
+            if BrowserViewModel.editing-location { return reject; }
+            if event.text == Key.Backspace { BrowserViewModel.go-up(); return accept; }
             if event.text == Key.UpArrow { BrowserViewModel.move-selection(-1); return accept; }
             if event.text == Key.DownArrow { BrowserViewModel.move-selection(1); return accept; }
             if event.text == Key.Return { BrowserViewModel.activate-selection(); return accept; }
-            if event.text == Key.Escape { BrowserViewModel.dismiss-error(); return accept; }
             reject
         }
 
         VerticalLayout {
+            // Elevation 4: above every other section.
+            TitleBar { z: 4; }
             HorizontalLayout {
                 vertical-stretch: 1;
                 // `z` raises the sidebar above its later siblings so its
@@ -60,6 +73,8 @@ export component AppWindow inherits Window {
         }
     }
 
-    // Last child, so it paints above everything else.
+    // Overlays, painted above everything else (last children).
+    if ChromeState.about-open: AboutOverlay { }
+    ResizeEdges { }
     TooltipOverlay { }
 }

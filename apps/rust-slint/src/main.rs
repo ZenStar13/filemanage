@@ -7,6 +7,7 @@
 //! implements its callbacks.
 
 mod browser;
+mod chrome;
 
 /// Code generated from `ui/app.slint`. Our lint policy doesn't apply to it.
 mod ui {
@@ -14,7 +15,7 @@ mod ui {
     slint::include_modules!();
 }
 
-use ui::{AppWindow, BrowserViewModel, Crumb, EntryRow, IconTone, PlaceItem};
+use ui::{AppWindow, BrowserViewModel, Crumb, EntryRow, IconTone, PlaceItem, WindowChrome};
 
 use std::sync::Arc;
 
@@ -30,5 +31,6 @@ fn main() -> Result<(), slint::PlatformError> {
 
     // Keep the view model alive for as long as the event loop runs.
     let _view_model = browser::BrowserViewModel::bind(&window, browse, &places);
+    chrome::bind(&window);
     window.run()
 }

@@ -38,6 +38,10 @@ export global BrowserViewModel {
     in property <string> error-message;
     in property <string> summary;
     in property <string> current-path;
+    /// Name of the current folder (title bar).
+    in property <string> current-name;
+    /// Whether the location row shows a text input instead of breadcrumbs.
+    in property <bool> editing-location;
     // Bumped when the selection is moved with the keyboard; the list scrolls
     // the row at `reveal-index` into view.
     in property <int> reveal-index: -1;
@@ -56,4 +60,9 @@ export global BrowserViewModel {
     callback activate(index: int);
     callback activate-selection();
     callback move-selection(delta: int);
+    callback go-home();
+    callback start-edit-location();
+    callback submit-location(text: string);
+    /// Escape: leave location editing, otherwise dismiss the error banner.
+    callback cancel();
 }

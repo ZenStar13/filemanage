@@ -1,0 +1,322 @@
+// Window chrome: client-side decorations replacing the system title bar.
+// The Rust `ChromeController` implements the `WindowChrome` callbacks with
+// winit's drag_window / drag_resize_window (requests to the compositor/WM).
+import { Palette, Typography, Metrics, Glyphs, GlyphCentering, Elevation } from "../theme.slint";
+import { BrowserViewModel } from "../view-model.slint";
+
+export global WindowChrome {
+    in property <bool> maximized;
+    callback drag();
+    callback resize(edge: string);
+    callback minimize();
+    callback toggle-maximize();
+    callback close();
+}
+
+// UI-only state shared by the chrome components.
+export global ChromeState {
+    in-out property <bool> about-open;
+}
+
+component MenuItem inherits Rectangle {
+    in property <string> label;
+    in property <string> shortcut;
+    in property <bool> enabled: true;
+    in property <bool> checked;
+    callback activated();
+
+    height: Metrics.menu-item-height;
+    border-radius: Metrics.radius-sm;
+    background: touch.has-hover && root.enabled ? Palette.menu-item-hover : transparent;
+
+    HorizontalLayout {
+        padding-left: Metrics.sm;
+        padding-right: Metrics.sm;
+        spacing: Metrics.sm;
+        Text {
+            width: 16px;
+            text: root.checked ? Glyphs.check : "";
+            color: Palette.aqua;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.label;
+            font-size: 14px;
+            color: !root.enabled ? Palette.border : touch.has-hover ? Palette.aqua : Palette.text-primary;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+        }
+        Text {
+            text: root.shortcut;
+            font-size: Typography.small;
+            color: Palette.text-secondary;
+            vertical-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.activated(); }
+    }
+}
+
+component MenuSeparator inherits Rectangle {
+    height: 9px;
+    Rectangle { height: 1px; background: Palette.border; }
+}
+
+export struct MenuEntry {
+    id: string,
+    label: string,
+    shortcut: string,
+    enabled: bool,
+    checked: bool,
+    separator: bool,
+}
+
+// A menu-bar title that opens its dropdown (`PopupWindow`) underneath.
+component MenuTitle inherits Rectangle {
+    in property <string> title;
+    in property <[MenuEntry]> entries;
+    callback activated(id: string);
+
+    width: label.preferred-width + 20px;
+    border-radius: Metrics.radius-sm;
+    background: touch.has-hover ? Palette.surface-raised : transparent;
+
+    label := Text {
+        text: root.title;
+        font-size: 14px;
+        color: touch.has-hover ? Palette.aqua : Palette.text-primary;
+        vertical-alignment: center;
+        horizontal-alignment: center;
+    }
+
+    touch := TouchArea {
+        clicked => { popup.show(); }
+    }
+
+    popup := PopupWindow {
+        x: 0;
+        y: root.height;
+        width: Metrics.menu-min-width;
+        Rectangle {
+            background: Palette.menu-surface;
+            border-color: Palette.purple;
+            border-width: 1px;
+            border-radius: Metrics.radius-md;
+            drop-shadow-blur: 14px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: #0000008C;
+            VerticalLayout {
+                padding: Metrics.xs;
+                for entry in root.entries: VerticalLayout {
+                    if entry.separator: MenuSeparator { }
+                    if !entry.separator: MenuItem {
+                        label: entry.label;
+                        shortcut: entry.shortcut;
+                        enabled: entry.enabled;
+                        checked: entry.checked;
+                        activated => { root.activated(entry.id); }
+                    }
+                }
+            }
+        }
+    }
+}
+
+component WindowControl inherits Rectangle {
+    in property <string> glyph;
+    in property <bool> is-close;
+    callback clicked();
+
+    width: Metrics.window-control-width;
+    background: !touch.has-hover ? transparent : root.is-close ? Palette.close-hover : Palette.window-control-hover;
+
+    // Fills the button: Slint clips text to its geometry and Nerd Font glyphs
+    // overflow their advance width.
+    Text {
+        x: -GlyphCentering.offset(root.glyph) * Typography.body;
+        width: parent.width;
+        horizontal-alignment: center;
+        text: root.glyph;
+        font-size: Typography.body;
+        color: !touch.has-hover ? Palette.text-primary : root.is-close ? white : Palette.aqua;
+        vertical-alignment: center;
+        height: parent.height;
+    }
+
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}
+
+// Custom title bar (elevation 4): app icon, menus, centred title, controls.
+// The background drags the window; double-click toggles maximise.
+export component TitleBar inherits Rectangle {
+    // Maps menu entry ids to commands.
+    function run(id: string) {
+        if id == "open-location" { BrowserViewModel.start-edit-location(); }
+        if id == "refresh" { BrowserViewModel.refresh(); }
+        if id == "quit" { WindowChrome.close(); }
+        if id == "toggle-hidden" { BrowserViewModel.toggle-hidden(); }
+        if id == "back" { BrowserViewModel.go-back(); }
+        if id == "forward" { BrowserViewModel.go-forward(); }
+        if id == "up" { BrowserViewModel.go-up(); }
+        if id == "home" { BrowserViewModel.go-home(); }
+        if id == "about" { ChromeState.about-open = true; }
+    }
+
+    height: Metrics.title-bar-height;
+    background: Elevation.title-bar-surface;
+    drop-shadow-offset-y: Elevation.title-bar-shadow-y;
+    drop-shadow-blur: Elevation.title-bar-shadow-blur;
+    drop-shadow-color: Elevation.title-bar-shadow;
+
+    TouchArea {
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+                WindowChrome.drag();
+            }
+        }
+        double-clicked => { WindowChrome.toggle-maximize(); }
+    }
+
+    Text {
+        text: BrowserViewModel.current-name;
+        font-size: 14px;
+        font-weight: 700;
+        color: Palette.gold;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        spacing: 2px;
+        alignment: start;
+        Text {
+            text: Glyphs.app-icon;
+            color: Palette.aqua;
+            vertical-alignment: center;
+            width: 30px;
+        }
+        MenuTitle {
+            title: "File";
+            entries: [
+                { id: "open-location", label: "Open Location…", shortcut: "Ctrl+L", enabled: true },
+                { id: "refresh", label: "Refresh", shortcut: "F5", enabled: true },
+                { separator: true },
+                { id: "quit", label: "Quit", shortcut: "Ctrl+Q", enabled: true },
+            ];
+            activated(id) => { root.run(id); }
+        }
+        MenuTitle {
+            title: "View";
+            entries: [
+                { id: "toggle-hidden", label: "Show Hidden Files", shortcut: "Ctrl+H", enabled: true,
+                  checked: BrowserViewModel.shows-hidden },
+            ];
+            activated(id) => { root.run(id); }
+        }
+        MenuTitle {
+            title: "Go";
+            entries: [
+                { id: "back", label: "Back", shortcut: "Alt+Left", enabled: BrowserViewModel.can-go-back },
+                { id: "forward", label: "Forward", shortcut: "Alt+Right", enabled: BrowserViewModel.can-go-forward },
+                { id: "up", label: "Up", shortcut: "Alt+Up", enabled: BrowserViewModel.can-go-up },
+                { id: "home", label: "Home", shortcut: "Alt+Home", enabled: true },
+            ];
+            activated(id) => { root.run(id); }
+        }
+        MenuTitle {
+            title: "Help";
+            entries: [{ id: "about", label: "About Files", enabled: true }];
+            activated(id) => { root.run(id); }
+        }
+    }
+
+    HorizontalLayout {
+        alignment: end;
+        WindowControl { glyph: Glyphs.chrome-minimize; clicked => { WindowChrome.minimize(); } }
+        WindowControl {
+            glyph: WindowChrome.maximized ? Glyphs.chrome-restore : Glyphs.chrome-maximize;
+            clicked => { WindowChrome.toggle-maximize(); }
+        }
+        WindowControl { glyph: Glyphs.chrome-close; is-close: true; clicked => { WindowChrome.close(); } }
+    }
+}
+
+component Grip inherits TouchArea {
+    in property <string> direction;
+    pointer-event(event) => {
+        if event.kind == PointerEventKind.down && event.button == PointerEventButton.left {
+            WindowChrome.resize(self.direction);
+        }
+    }
+}
+
+// 5px bands along the window edges that start a WM-driven resize.
+export component ResizeEdges inherits Rectangle {
+    property <length> edge: 5px;
+
+    if !WindowChrome.maximized: Rectangle {
+        Grip { direction: "north"; x: root.edge; y: 0; width: parent.width - 2 * root.edge; height: root.edge; mouse-cursor: ns-resize; }
+        Grip { direction: "south"; x: root.edge; y: parent.height - root.edge; width: parent.width - 2 * root.edge; height: root.edge; mouse-cursor: ns-resize; }
+        Grip { direction: "west"; x: 0; y: root.edge; width: root.edge; height: parent.height - 2 * root.edge; mouse-cursor: ew-resize; }
+        Grip { direction: "east"; x: parent.width - root.edge; y: root.edge; width: root.edge; height: parent.height - 2 * root.edge; mouse-cursor: ew-resize; }
+        Grip { direction: "north-west"; x: 0; y: 0; width: root.edge; height: root.edge; mouse-cursor: nwse-resize; }
+        Grip { direction: "north-east"; x: parent.width - root.edge; y: 0; width: root.edge; height: root.edge; mouse-cursor: nesw-resize; }
+        Grip { direction: "south-west"; x: 0; y: parent.height - root.edge; width: root.edge; height: root.edge; mouse-cursor: nesw-resize; }
+        Grip { direction: "south-east"; x: parent.width - root.edge; y: parent.height - root.edge; width: root.edge; height: root.edge; mouse-cursor: nwse-resize; }
+    }
+}
+
+// Modal About dialog over a dimmed backdrop.
+export component AboutOverlay inherits Rectangle {
+    background: #0000008C;
+    TouchArea { clicked => { ChromeState.about-open = false; } }
+
+    Rectangle {
+        width: 440px;
+        height: body.preferred-height;
+        background: Palette.menu-surface;
+        border-color: Palette.purple;
+        border-width: 1px;
+        border-radius: Metrics.radius-md;
+        drop-shadow-blur: 24px;
+        drop-shadow-offset-y: 8px;
+        drop-shadow-color: #00000099;
+        TouchArea { } // swallow clicks inside the card
+
+        body := VerticalLayout {
+            padding: 24px;
+            spacing: Metrics.md;
+            HorizontalLayout {
+                spacing: Metrics.md;
+                alignment: start;
+                Text { text: Glyphs.app-icon; color: Palette.aqua; font-size: Typography.title; }
+                Text { text: "Files"; color: Palette.gold; font-size: Typography.title; font-weight: 700; }
+            }
+            Text { text: "Rust · Slint 1.19"; color: Palette.purple; }
+            Text {
+                text: "A first-draft file manager, built six times to compare Linux GUI stacks.\nAqua · purple · gold  —  0xProto Nerd Font";
+                color: Palette.text-secondary;
+                wrap: word-wrap;
+            }
+            HorizontalLayout {
+                alignment: end;
+                Rectangle {
+                    width: 90px;
+                    height: 30px;
+                    border-radius: Metrics.radius-md;
+                    border-width: Metrics.button-border-width;
+                    border-color: close-touch.has-hover ? Palette.button-border-hover : Palette.button-border;
+                    background: close-touch.has-hover ? Palette.purple-muted : Elevation.button-surface;
+                    Text { text: "Close"; color: Palette.aqua; }
+                    close-touch := TouchArea { clicked => { ChromeState.about-open = false; } }
+                }
+            }
+        }
+    }
+}

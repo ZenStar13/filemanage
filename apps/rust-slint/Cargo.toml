@@ -14,7 +14,7 @@ path = "src/main.rs"
 [dependencies]
 fm-core.workspace = true
 fm-ui-kit.workspace = true
-slint = "1.19"
+slint = { version = "1.19", features = ["unstable-winit-030"] }
 futures-channel = "0.3"
 
 [build-dependencies]

@@ -32,6 +32,8 @@ struct State {
     error: Option<FsError>,
     loading: bool,
     ticket: u64,
+    home: DirectoryPath,
+    editing_location: bool,
 }
 
 impl State {
@@ -78,6 +80,8 @@ impl BrowserViewModel {
                 error: None,
                 loading: false,
                 ticket: 0,
+                home: places.start_location(),
+                editing_location: false,
             }),
             browse,
             window: window.as_weak(),
@@ -116,6 +120,10 @@ impl BrowserViewModel {
         on!(on_activate, |vm, index: i32| vm.activate(index));
         on!(on_activate_selection, |vm| vm.activate_selection());
         on!(on_move_selection, |vm, delta: i32| vm.move_selection(delta));
+        on!(on_go_home, |vm| vm.go_home());
+        on!(on_start_edit_location, |vm| vm.set_editing(true));
+        on!(on_submit_location, |vm, text: slint::SharedString| vm.submit_location(&text));
+        on!(on_cancel, |vm| vm.cancel());
     }
 
     // ---- Commands -----------------------------------------------------
@@ -140,6 +148,36 @@ impl BrowserViewModel {
         let segments = self.state.borrow().history.current().segments();
         if let Some(segment) = usize::try_from(index).ok().and_then(|i| segments.into_iter().nth(i)) {
             self.load(segment.path, Navigation::Visit);
+        }
+    }
+
+    fn go_home(self: &Rc<Self>) {
+        let home = self.state.borrow().home.clone();
+        self.load(home, Navigation::Visit);
+    }
+
+    fn set_editing(&self, editing: bool) {
+        self.state.borrow_mut().editing_location = editing;
+        self.present_chrome();
+    }
+
+    fn submit_location(self: &Rc<Self>, text: &str) {
+        let destination = {
+            let state = self.state.borrow();
+            DirectoryPath::resolve_user_input(text, state.history.current(), &state.home)
+        };
+        self.set_editing(false);
+        if let Some(destination) = destination {
+            self.load(destination, Navigation::Visit);
+        }
+    }
+
+    /// Escape: leave location editing, otherwise dismiss the error banner.
+    fn cancel(&self) {
+        if self.state.borrow().editing_location {
+            self.set_editing(false);
+        } else {
+            self.dismiss_error();
         }
     }
 
@@ -259,6 +297,7 @@ impl BrowserViewModel {
                     }
                     state.listing = Some(listing);
                     state.selected = None;
+                    state.editing_location = false;
                     state.error = None;
                 }
                 Err(error) => state.error = Some(error),
@@ -323,6 +362,10 @@ impl BrowserViewModel {
         global.set_shows_hidden(state.visibility.shows_hidden());
         global.set_loading(state.loading);
         global.set_current_path(current.to_string().into());
+        let name =
+            current.as_path().file_name().map_or_else(|| current.to_string(), |n| n.to_string_lossy().into());
+        global.set_current_name(name.into());
+        global.set_editing_location(state.editing_location);
         global.set_error_message(state.error.as_ref().map(ToString::to_string).unwrap_or_default().into());
         let summary = state.listing.as_ref().map(|l| l.summary(state.visibility));
         global.set_summary(

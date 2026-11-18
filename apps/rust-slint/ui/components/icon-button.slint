@@ -14,8 +14,13 @@ export component IconButton inherits Rectangle {
     width: 36px;
     height: 30px;
     border-radius: Metrics.radius-md;
-    border-width: 1px;
-    border-color: active ? Palette.aqua : Palette.border;
+    // Strongly defined 2px border, coloured by state.
+    border-width: Metrics.button-border-width;
+    border-color: active ? Palette.aqua
+        : !enabled ? Palette.button-border-disabled
+        : touch.pressed ? Palette.button-border-pressed
+        : touch.has-hover ? Palette.button-border-hover
+        : Palette.button-border;
     background: active ? Palette.aqua
         : !enabled ? transparent
         : touch.pressed ? Palette.aqua-muted

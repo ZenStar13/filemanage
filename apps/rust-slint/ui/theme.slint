@@ -23,6 +23,18 @@ export global Palette {
     out property <color> text-secondary: #8DB6BC;
     out property <color> text-on-aqua: #04201F;
     out property <color> danger: #FF6B8A;
+
+    // Tool buttons: strongly defined borders.
+    out property <color> button-border: #1A9C98;
+    out property <color> button-border-hover: #A06CFF;
+    out property <color> button-border-pressed: #00E5E0;
+    out property <color> button-border-disabled: #1F4651;
+    // Location field, menus, window controls.
+    out property <color> location-surface: #0E2128;
+    out property <color> menu-surface: #1B3A45;
+    out property <color> menu-item-hover: #3C2A66;
+    out property <color> window-control-hover: #24495A;
+    out property <color> close-hover: #E0405E;
 }
 
 export global Typography {
@@ -41,7 +53,15 @@ export global Metrics {
     out property <length> radius-md: 8px;
     out property <length> sidebar-width: 220px;
     out property <length> row-height: 28px;
-    out property <length> toolbar-height: 44px;
+    out property <length> action-row-height: 44px;
+    out property <length> location-row-height: 40px;
+    out property <length> toolbar-height: self.action-row-height + self.location-row-height;
+    out property <length> location-field-height: 30px;
+    out property <length> title-bar-height: 36px;
+    out property <length> window-control-width: 46px;
+    out property <length> menu-item-height: 28px;
+    out property <length> menu-min-width: 220px;
+    out property <length> button-border-width: 2px;
     out property <length> status-bar-height: 26px;
 }
 
@@ -56,6 +76,13 @@ export global Glyphs {
     out property <string> eye-slash: "\u{F070}";
     out property <string> chevron-right: "\u{F054}";
     out property <string> warning: "\u{F071}";
+    out property <string> edit: "\u{EA73}";
+    out property <string> check: "\u{F00C}";
+    out property <string> app-icon: "\u{F07C}";
+    out property <string> chrome-minimize: "\u{EABA}";
+    out property <string> chrome-maximize: "\u{EAB9}";
+    out property <string> chrome-restore: "\u{EABB}";
+    out property <string> chrome-close: "\u{EAB8}";
 }
 
 // Semantic icon tone -> palette colour.
@@ -91,6 +118,11 @@ export global Elevation {
     out property <length> sidebar-shadow-blur: 14px;
     out property <color> sidebar-shadow: #0000008C; // alpha .55
 
+    out property <color> title-bar-surface: #1B3A45;
+    out property <length> title-bar-shadow-y: 2px;
+    out property <length> title-bar-shadow-blur: 10px;
+    out property <color> title-bar-shadow: #00000080; // alpha .5
+
     out property <color> button-surface: #1D3D49;
     out property <length> button-shadow-y: 1px;
     out property <length> button-shadow-blur: 3px;
@@ -105,6 +137,11 @@ export global GlyphCentering {
         if glyph == Glyphs.refresh { return 0.122; }
         if glyph == Glyphs.eye { return 0.209; }
         if glyph == Glyphs.eye-slash { return 0.268; }
+        if glyph == Glyphs.chrome-minimize || glyph == Glyphs.chrome-restore { return 0.003; }
+        if glyph == Glyphs.chrome-maximize { return 0.065; }
+        if glyph == Glyphs.chrome-close { return 0.033; }
+        if glyph == Glyphs.edit { return 0.126; }
+        if glyph == Glyphs.app-icon { return 0.209; }
         return 0;
     }
 }
