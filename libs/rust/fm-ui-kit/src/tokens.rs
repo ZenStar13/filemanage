@@ -60,7 +60,12 @@ pub mod radius {
 pub mod layout {
     pub const SIDEBAR_WIDTH: f32 = 220.0;
     pub const ROW_HEIGHT: f32 = 28.0;
-    pub const TOOLBAR_HEIGHT: f32 = 44.0;
+    /// Action row + location row.
+    pub const TOOLBAR_HEIGHT: f32 = ACTION_ROW_HEIGHT + LOCATION_ROW_HEIGHT;
+    pub const ACTION_ROW_HEIGHT: f32 = 44.0;
+    pub const LOCATION_ROW_HEIGHT: f32 = 40.0;
+    pub const TITLE_BAR_HEIGHT: f32 = 36.0;
+    pub const WINDOW_CONTROL_WIDTH: f32 = 46.0;
     pub const STATUS_BAR_HEIGHT: f32 = 26.0;
 }
 
@@ -99,8 +104,57 @@ pub mod elevation {
         surface: Rgb::from_hex(0x0017_323C),
         shadow: Some(Shadow { x: 3.0, y: 0.0, blur: 14.0, alpha: 0.55 }),
     };
+    /// The custom title bar with the menus: the highest section.
+    pub const TITLE_BAR: Level = Level {
+        surface: Rgb::from_hex(0x001B_3A45),
+        shadow: Some(Shadow { x: 0.0, y: 2.0, blur: 10.0, alpha: 0.5 }),
+    };
     pub const BUTTON: Level = Level {
         surface: Rgb::from_hex(0x001D_3D49),
         shadow: Some(Shadow { x: 0.0, y: 1.0, blur: 3.0, alpha: 0.45 }),
     };
+}
+
+/// Tool buttons: strongly defined borders (`design/tokens.json` → `button`).
+pub mod button {
+    use super::Rgb;
+
+    pub const BORDER_WIDTH: f32 = 2.0;
+    pub const BORDER: Rgb = Rgb::from_hex(0x001A_9C98);
+    pub const BORDER_HOVER: Rgb = Rgb::from_hex(0x00A0_6CFF);
+    pub const BORDER_PRESSED: Rgb = Rgb::from_hex(0x0000_E5E0);
+    pub const BORDER_DISABLED: Rgb = Rgb::from_hex(0x001F_4651);
+}
+
+/// Breadcrumb bar / path input (`design/tokens.json` → `locationField`).
+pub mod location_field {
+    use super::Rgb;
+
+    pub const HEIGHT: f32 = 30.0;
+    pub const SURFACE: Rgb = Rgb::from_hex(0x000E_2128);
+    pub const BORDER: Rgb = Rgb::from_hex(0x001F_4651);
+    pub const BORDER_FOCUSED: Rgb = Rgb::from_hex(0x0000_E5E0);
+    pub const BORDER_WIDTH: f32 = 1.0;
+    pub const BORDER_FOCUSED_WIDTH: f32 = 2.0;
+}
+
+/// Menu bar and dropdowns (`design/tokens.json` → `menu`).
+pub mod menu {
+    use super::Rgb;
+
+    pub const SURFACE: Rgb = Rgb::from_hex(0x001B_3A45);
+    pub const BORDER: Rgb = Rgb::from_hex(0x00A0_6CFF);
+    pub const ITEM_HEIGHT: f32 = 28.0;
+    pub const ITEM_HOVER: Rgb = Rgb::from_hex(0x003C_2A66);
+    pub const SHORTCUT_TEXT: Rgb = Rgb::from_hex(0x008D_B6BC);
+    pub const MIN_WIDTH: f32 = 220.0;
+}
+
+/// Minimise / maximise / close (`design/tokens.json` → `windowControls`).
+pub mod window_controls {
+    use super::Rgb;
+
+    pub const HOVER: Rgb = Rgb::from_hex(0x0024_495A);
+    pub const CLOSE_HOVER: Rgb = Rgb::from_hex(0x00E0_405E);
+    pub const CLOSE_HOVER_GLYPH: Rgb = Rgb::from_hex(0x00FF_FFFF);
 }

@@ -10,6 +10,7 @@ pub enum Navigation {
     Back,
     Forward,
     Up,
+    Home,
     Refresh,
 }
 
@@ -34,4 +35,10 @@ pub enum Message {
     ActivateSelection,
     ToggleHidden,
     DismissError,
+    /// Location row: switch the breadcrumbs to a text input (Ctrl+L).
+    StartEditLocation,
+    EditLocation(String),
+    SubmitLocation,
+    /// Escape: leave edit mode or dismiss the error banner.
+    Cancel,
 }

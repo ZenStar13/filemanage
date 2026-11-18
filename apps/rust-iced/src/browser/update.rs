@@ -1,8 +1,9 @@
 use fm_core::domain::DirectoryPath;
 use iced::Task;
+use iced::widget::operation;
 
 use super::message::{LoadOutcome, Message, Navigation};
-use super::state::{Browser, Phase};
+use super::state::{Browser, LOCATION_INPUT, Phase};
 
 impl Browser {
     pub fn update(&mut self, message: Message) -> Task<Message> {
@@ -27,6 +28,10 @@ impl Browser {
                 }
                 Task::none()
             }
+            // While typing a path, arrows and Enter belong to the text input.
+            Message::MoveSelection(_) | Message::ActivateSelection if self.location_draft.is_some() => {
+                Task::none()
+            }
             Message::MoveSelection(delta) => {
                 self.move_selection(delta);
                 Task::none()
@@ -35,6 +40,28 @@ impl Browser {
                 Some(path) => self.activate(&path),
                 None => Task::none(),
             },
+            Message::StartEditLocation => {
+                self.location_draft = Some(self.history.current().to_string());
+                let id = iced::widget::Id::new(LOCATION_INPUT);
+                Task::batch([operation::focus(id.clone()), operation::select_all(id)])
+            }
+            Message::EditLocation(draft) => {
+                self.location_draft = Some(draft);
+                Task::none()
+            }
+            Message::SubmitLocation => {
+                let Some(draft) = self.location_draft.take() else { return Task::none() };
+                match DirectoryPath::resolve_user_input(&draft, self.history.current(), &self.home) {
+                    Some(destination) => self.navigate(Navigation::Visit(destination)),
+                    None => Task::none(),
+                }
+            }
+            Message::Cancel => {
+                if self.location_draft.take().is_none() {
+                    self.error = None;
+                }
+                Task::none()
+            }
             Message::ToggleHidden => {
                 self.visibility = self.visibility.toggled();
                 Task::none()
@@ -54,6 +81,7 @@ impl Browser {
             Navigation::Back => self.history.peek_back().cloned(),
             Navigation::Forward => self.history.peek_forward().cloned(),
             Navigation::Up => self.history.current().parent(),
+            Navigation::Home => Some(self.home.clone()),
             Navigation::Refresh => Some(self.history.current().clone()),
         };
         let Some(destination) = destination else { return Task::none() };
@@ -79,13 +107,16 @@ impl Browser {
             Ok(listing) => {
                 let destination = listing.path().clone();
                 match outcome.navigation {
-                    Navigation::Visit(_) | Navigation::Up => self.history.visit(destination),
+                    Navigation::Visit(_) | Navigation::Up | Navigation::Home => {
+                        self.history.visit(destination);
+                    }
                     Navigation::Back => _ = self.history.go_back(),
                     Navigation::Forward => _ = self.history.go_forward(),
                     Navigation::Refresh => {}
                 }
                 self.selected = None;
                 self.hovered = None;
+                self.location_draft = None;
                 self.error = None;
                 self.listing = Some(listing);
             }

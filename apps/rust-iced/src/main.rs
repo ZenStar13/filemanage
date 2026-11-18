@@ -10,6 +10,7 @@
 
 mod app;
 mod browser;
+mod chrome;
 mod theme;
 
 use std::sync::Arc;
@@ -33,6 +34,8 @@ fn main() -> iced::Result {
         .font(fm_ui_kit::font::BOLD)
         .default_font(theme::font::REGULAR)
         .window_size((1100.0, 700.0))
+        // Client-side decorations: our own title bar, menus and controls.
+        .decorations(false)
         .antialiasing(true)
         .run()
 }

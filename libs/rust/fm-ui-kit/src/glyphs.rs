@@ -33,6 +33,13 @@ pub const EYE: &str = "\u{F06E}";
 pub const EYE_SLASH: &str = "\u{F070}";
 pub const CHEVRON_RIGHT: &str = "\u{F054}";
 pub const WARNING: &str = "\u{F071}";
+pub const EDIT: &str = "\u{EA73}";
+pub const CHECK: &str = "\u{F00C}";
+pub const APP_ICON: &str = FOLDER_OPEN;
+pub const CHROME_MINIMIZE: &str = "\u{EABA}";
+pub const CHROME_MAXIMIZE: &str = "\u{EAB9}";
+pub const CHROME_RESTORE: &str = "\u{EABB}";
+pub const CHROME_CLOSE: &str = "\u{EAB8}";
 
 /// Semantic tone of an icon; each toolkit maps it to a palette colour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -95,11 +102,15 @@ pub fn for_place(kind: PlaceKind) -> &'static str {
 /// `optical_offset(glyph) * font_size` pixels to centre it inside a button.
 pub fn optical_offset(glyph: &str) -> f32 {
     match glyph {
-        BACK | FORWARD => 0.094,
+        BACK | FORWARD | CHECK => 0.094,
         UP => 0.036,
         REFRESH => 0.122,
-        EYE => 0.209,
+        EYE | FOLDER_OPEN => 0.209,
         EYE_SLASH => 0.268,
+        CHROME_MINIMIZE | CHROME_RESTORE => 0.003,
+        CHROME_MAXIMIZE => 0.065,
+        CHROME_CLOSE => 0.033,
+        EDIT => 0.126,
         _ => 0.0,
     }
 }

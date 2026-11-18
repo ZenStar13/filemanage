@@ -1,10 +1,21 @@
-use iced::Subscription;
 use iced::keyboard::{self, Key, key::Named};
+use iced::{Event, Subscription, event, window};
 
 use super::message::{Message, Navigation};
 
+/// Keyboard shortcuts. Only keys no widget handled are mapped (so typing in
+/// the location input never triggers shortcuts), except Escape, which must
+/// also cancel editing while the text input has focus.
 pub fn subscription() -> Subscription<Message> {
-    keyboard::listen().filter_map(to_message)
+    event::listen_with(on_event)
+}
+
+fn on_event(event: Event, status: event::Status, _window: window::Id) -> Option<Message> {
+    let Event::Keyboard(event) = event else { return None };
+    if let keyboard::Event::KeyPressed { key: Key::Named(Named::Escape), .. } = &event {
+        return Some(Message::Cancel);
+    }
+    if status == event::Status::Ignored { to_message(event) } else { None }
 }
 
 /// Pure mapping from key presses to intents — easy to unit test.
@@ -19,8 +30,9 @@ fn to_message(event: keyboard::Event) -> Option<Message> {
         Key::Named(Named::ArrowUp) => Message::MoveSelection(-1),
         Key::Named(Named::ArrowDown) => Message::MoveSelection(1),
         Key::Named(Named::Enter) => Message::ActivateSelection,
-        Key::Named(Named::Escape) => Message::DismissError,
+        Key::Named(Named::Home) if modifiers.alt() => Message::Navigate(Navigation::Home),
         Key::Character("h") if modifiers.control() => Message::ToggleHidden,
+        Key::Character("l") if modifiers.control() => Message::StartEditLocation,
         _ => return None,
     };
     Some(message)

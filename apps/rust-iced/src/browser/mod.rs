@@ -12,7 +12,7 @@ mod state;
 mod update;
 mod view;
 
-pub use message::Message;
+pub use message::{Message, Navigation};
 pub use state::Browser;
 
 impl Browser {

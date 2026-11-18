@@ -42,6 +42,38 @@ impl DirectoryPath {
         Self(self.0.join(child))
     }
 
+    /// Resolves what a user typed in the location bar into a directory path.
+    ///
+    /// Accepts absolute paths, `~` / `~/…` (relative to `home`) and paths
+    /// relative to `current`. `.` and `..` are resolved lexically (without
+    /// touching the filesystem). Returns `None` for blank input.
+    pub fn resolve_user_input(input: &str, current: &Self, home: &Self) -> Option<Self> {
+        let input = input.trim();
+        if input.is_empty() {
+            return None;
+        }
+        let raw = if input == "~" {
+            home.0.clone()
+        } else if let Some(rest) = input.strip_prefix("~/") {
+            home.0.join(rest)
+        } else if Path::new(input).is_absolute() {
+            PathBuf::from(input)
+        } else {
+            current.0.join(input)
+        };
+        let mut normalised = PathBuf::from("/");
+        for component in raw.components() {
+            match component {
+                std::path::Component::ParentDir => {
+                    normalised.pop();
+                }
+                std::path::Component::Normal(part) => normalised.push(part),
+                _ => {}
+            }
+        }
+        Some(Self(normalised))
+    }
+
     pub fn is_root(&self) -> bool {
         self.0.parent().is_none()
     }
@@ -91,6 +123,19 @@ mod tests {
         let labels: Vec<_> = path.segments().into_iter().map(|s| s.label).collect();
         assert_eq!(labels, ["/", "home", "user", "docs"]);
         assert_eq!(path.segments()[1].path.to_string(), "/home");
+    }
+
+    #[test]
+    fn resolves_location_bar_input() {
+        let current = DirectoryPath::new("/home/user/docs").unwrap();
+        let home = DirectoryPath::new("/home/user").unwrap();
+        let resolve = |s| DirectoryPath::resolve_user_input(s, &current, &home).map(|p| p.to_string());
+        assert_eq!(resolve("/etc/"), Some("/etc".into()));
+        assert_eq!(resolve("  ~ "), Some("/home/user".into()));
+        assert_eq!(resolve("~/Music"), Some("/home/user/Music".into()));
+        assert_eq!(resolve("../Pictures/./x"), Some("/home/user/Pictures/x".into()));
+        assert_eq!(resolve("/../.."), Some("/".into()));
+        assert_eq!(resolve("   "), None);
     }
 
     #[test]

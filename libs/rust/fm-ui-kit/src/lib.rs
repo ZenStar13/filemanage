@@ -7,6 +7,7 @@
 
 pub mod format;
 pub mod glyphs;
+pub mod menu;
 pub mod tokens;
 
 /// The bundled font, embedded at compile time so the apps are self-contained.
