@@ -26,6 +26,12 @@ abstract final class AppGlyphs {
   static const eyeSlash = '\u{F070}';
   static const chevronRight = '\u{F054}';
   static const warning = '\u{F071}';
+  static const edit = '\u{EA73}';
+  static const appIcon = '\u{F07C}';
+  static const chromeMinimize = '\u{EABA}';
+  static const chromeMaximize = '\u{EAB9}';
+  static const chromeRestore = '\u{EABB}';
+  static const chromeClose = '\u{EAB8}';
 
   /// Optical-centre correction in em (`design/tokens.json` →
   /// `glyphCentering`): how far to shift a glyph left to centre its ink.
@@ -35,6 +41,11 @@ abstract final class AppGlyphs {
     refresh => 0.122,
     eye => 0.209,
     eyeSlash => 0.268,
+    chromeMinimize || chromeRestore => 0.003,
+    chromeMaximize => 0.065,
+    chromeClose => 0.033,
+    edit => 0.126,
+    appIcon => 0.209,
     _ => 0,
   };
 

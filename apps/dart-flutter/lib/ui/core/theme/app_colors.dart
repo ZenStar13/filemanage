@@ -21,4 +21,21 @@ abstract final class AppColors {
   static const textSecondary = Color(0xFF8DB6BC);
   static const textOnAqua = Color(0xFF04201F);
   static const danger = Color(0xFFFF6B8A);
+
+  // Tool buttons: strongly defined borders.
+  static const buttonBorder = Color(0xFF1A9C98);
+  static const buttonBorderHover = purple;
+  static const buttonBorderPressed = aqua;
+  static const buttonBorderDisabled = border;
+
+  // Location field (breadcrumbs / path input).
+  static const locationSurface = Color(0xFF0E2128);
+  static const locationBorder = border;
+
+  // Title bar, menus, window controls.
+  static const titleBar = Color(0xFF1B3A45);
+  static const menuSurface = Color(0xFF1B3A45);
+  static const menuItemHover = purpleMuted;
+  static const windowControlHover = Color(0xFF24495A);
+  static const closeHover = Color(0xFFE0405E);
 }

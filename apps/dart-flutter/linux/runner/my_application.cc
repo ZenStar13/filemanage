@@ -3,6 +3,7 @@
 #include <flutter_linux/flutter_linux.h>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "window_channel.h"
 
 struct _MyApplication {
   GtkApplication parent_instance;
@@ -34,6 +35,9 @@ static void my_application_activate(GApplication* application) {
   // gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
 
   gtk_window_set_title(window, "Files (Flutter)");
+  // Client-side decorations: the Flutter UI draws its own title bar, menus
+  // and window controls, and drives the window over "files/window".
+  gtk_window_set_decorated(window, FALSE);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(
@@ -55,6 +59,7 @@ static void my_application_activate(GApplication* application) {
   gtk_widget_realize(GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+  window_channel_register(view, window);
 
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }

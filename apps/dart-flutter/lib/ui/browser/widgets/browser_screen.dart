@@ -16,6 +16,8 @@ class BrowserScreen extends StatelessWidget {
 
   final BrowserViewModel viewModel;
 
+  bool _typing() => viewModel.isEditingLocation;
+
   @override
   Widget build(BuildContext context) {
     return Shortcuts(
@@ -28,8 +30,10 @@ class BrowserScreen extends StatelessWidget {
           GoForwardIntent: CallbackAction<GoForwardIntent>(
             onInvoke: (_) => viewModel.goForward(),
           ),
-          GoUpIntent: CallbackAction<GoUpIntent>(
+          // Keys a text field also uses are disabled while typing a path.
+          GoUpIntent: GuardedAction<GoUpIntent>(
             onInvoke: (_) => viewModel.goUp(),
+            isBlocked: _typing,
           ),
           RefreshIntent: CallbackAction<RefreshIntent>(
             onInvoke: (_) => viewModel.refresh(),
@@ -37,11 +41,22 @@ class BrowserScreen extends StatelessWidget {
           ToggleHiddenIntent: CallbackAction<ToggleHiddenIntent>(
             onInvoke: (_) => viewModel.toggleHidden(),
           ),
-          ActivateSelectionIntent: CallbackAction<ActivateSelectionIntent>(
+          ActivateSelectionIntent: GuardedAction<ActivateSelectionIntent>(
             onInvoke: (_) => viewModel.activateSelection(),
+            isBlocked: _typing,
           ),
-          MoveSelectionIntent: CallbackAction<MoveSelectionIntent>(
+          MoveSelectionIntent: GuardedAction<MoveSelectionIntent>(
             onInvoke: (intent) => viewModel.moveSelection(intent.delta),
+            isBlocked: _typing,
+          ),
+          GoHomeIntent: CallbackAction<GoHomeIntent>(
+            onInvoke: (_) => viewModel.goHome(),
+          ),
+          EditLocationIntent: CallbackAction<EditLocationIntent>(
+            onInvoke: (_) => viewModel.startEditingLocation(),
+          ),
+          CancelIntent: CallbackAction<CancelIntent>(
+            onInvoke: (_) => viewModel.cancel(),
           ),
         },
         child: Focus(

@@ -39,6 +39,14 @@ abstract final class AppElevation {
     ],
   );
 
+  /// The custom title bar with the menus: the highest section.
+  static const titleBar = ElevationLevel(
+    surface: Color(0xFF1B3A45),
+    shadows: [
+      BoxShadow(color: Color(0x80000000), offset: Offset(0, 2), blurRadius: 10),
+    ],
+  );
+
   /// Tool buttons use Material's own (state-aware) button elevation.
   static const buttonSurface = Color(0xFF1D3D49);
   static const buttonElevation = 1.0;

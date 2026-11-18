@@ -7,6 +7,7 @@ import '../data/repositories/places_repository.dart';
 import '../data/repositories/xdg_places_repository.dart';
 import '../data/services/file_system_service.dart';
 import '../data/services/places_service.dart';
+import '../data/services/window_service.dart';
 import '../domain/use_cases/browse_directory_use_case.dart';
 
 /// Composition root: the dependency graph, from services up to use cases.
@@ -14,6 +15,7 @@ import '../domain/use_cases/browse_directory_use_case.dart';
 List<SingleChildWidget> get providers => [
   Provider(create: (_) => const FileSystemService()),
   Provider(create: (_) => const PlacesService()),
+  Provider(create: (_) => const WindowService()),
   Provider<FileSystemRepository>(
     create: (context) =>
         LocalFileSystemRepository(service: context.read<FileSystemService>()),

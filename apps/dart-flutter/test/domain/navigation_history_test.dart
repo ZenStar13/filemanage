@@ -43,6 +43,22 @@ void main() {
       expect(segments[1].path, path('/home'));
     });
 
+    test('resolves location-bar input', () {
+      final current = path('/home/user/docs');
+      final home = path('/home/user');
+      String? resolve(String input) => DirectoryPath.resolveUserInput(
+        input,
+        current: current,
+        home: home,
+      )?.value;
+      expect(resolve('/etc/'), '/etc');
+      expect(resolve('  ~ '), '/home/user');
+      expect(resolve('~/Music'), '/home/user/Music');
+      expect(resolve('../Pictures/./x'), '/home/user/Pictures/x');
+      expect(resolve('/../..'), '/');
+      expect(resolve('   '), isNull);
+    });
+
     test('root has no parent', () {
       expect(DirectoryPath.root.parent, isNull);
     });

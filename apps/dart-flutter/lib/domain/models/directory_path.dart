@@ -10,6 +10,29 @@ final class DirectoryPath {
 
   static const root = DirectoryPath._('/');
 
+  /// Resolves what a user typed in the location bar: absolute paths, `~` /
+  /// `~/…` (relative to [home]) and paths relative to [current]. `.` and `..`
+  /// are resolved lexically. Returns `null` for blank input.
+  static DirectoryPath? resolveUserInput(
+    String input, {
+    required DirectoryPath current,
+    required DirectoryPath home,
+  }) {
+    final text = input.trim();
+    if (text.isEmpty) return null;
+    final String raw;
+    if (text == '~') {
+      raw = home.value;
+    } else if (text.startsWith('~/')) {
+      raw = p.join(home.value, text.substring(2));
+    } else if (p.isAbsolute(text)) {
+      raw = text;
+    } else {
+      raw = p.join(current.value, text);
+    }
+    return DirectoryPath._(p.normalize(raw));
+  }
+
   final String value;
 
   bool get isRoot => value == p.rootPrefix(value);

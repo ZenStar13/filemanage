@@ -11,7 +11,15 @@ abstract final class Dimens {
 
   static const sidebarWidth = 220.0;
   static const rowHeight = 28.0;
-  static const toolbarHeight = 44.0;
+  static const toolbarHeight = actionRowHeight + locationRowHeight;
+  static const actionRowHeight = 44.0;
+  static const locationRowHeight = 40.0;
+  static const locationFieldHeight = 30.0;
+  static const titleBarHeight = 36.0;
+  static const windowControlWidth = 46.0;
+  static const menuItemHeight = 28.0;
+  static const menuMinWidth = 220.0;
+  static const buttonBorderWidth = 2.0;
   static const statusBarHeight = 26.0;
 
   static const fontSmall = 13.0;

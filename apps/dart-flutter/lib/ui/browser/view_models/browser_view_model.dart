@@ -33,6 +33,7 @@ class BrowserViewModel extends ChangeNotifier {
   String? _selectedPath;
   FsFailure? _failure;
   bool _loading = false;
+  bool _editingLocation = false;
   int _ticket = 0;
 
   // ---- State -------------------------------------------------------------
@@ -45,6 +46,9 @@ class BrowserViewModel extends ChangeNotifier {
   bool get canGoUp => _history.canGoUp;
   bool get showsHidden => _visibility.showsHidden;
   bool get isLoading => _loading;
+
+  /// Whether the location row shows a text input instead of breadcrumbs.
+  bool get isEditingLocation => _editingLocation;
   FsFailure? get failure => _failure;
   String? get selectedPath => _selectedPath;
 
@@ -65,6 +69,37 @@ class BrowserViewModel extends ChangeNotifier {
   Future<void> goUp() => navigate(const UpRequest());
   Future<void> refresh() => navigate(const RefreshRequest());
   Future<void> open(DirectoryPath path) => navigate(VisitRequest(path));
+  Future<void> goHome() => open(_placesRepository.home);
+
+  void startEditingLocation() {
+    _editingLocation = true;
+    notifyListeners();
+  }
+
+  void cancelEditingLocation() {
+    if (!_editingLocation) return;
+    _editingLocation = false;
+    notifyListeners();
+  }
+
+  /// Navigates to what the user typed; unreadable folders surface through
+  /// the usual failure banner.
+  Future<void> submitLocation(String input) async {
+    _editingLocation = false;
+    final destination = DirectoryPath.resolveUserInput(
+      input,
+      current: _history.current,
+      home: _placesRepository.home,
+    );
+    notifyListeners();
+    if (destination != null) await open(destination);
+  }
+
+  /// Escape: leave location editing, otherwise dismiss the failure banner.
+  void cancel() {
+    if (_editingLocation) return cancelEditingLocation();
+    dismissFailure();
+  }
 
   void select(FileEntry entry) {
     if (_selectedPath == entry.path) return;

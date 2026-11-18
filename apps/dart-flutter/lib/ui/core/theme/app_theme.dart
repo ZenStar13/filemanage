@@ -76,10 +76,75 @@ abstract final class AppTheme {
                 ? AppColors.purpleMuted
                 : AppColors.surfaceRaised,
           ),
-          shape: const WidgetStatePropertyAll(
+          // Strongly defined 2px borders whose colour follows the state.
+          shape: WidgetStateProperty.resolveWith(
+            (states) => RoundedRectangleBorder(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(Dimens.radiusMd),
+              ),
+              side: BorderSide(
+                width: Dimens.buttonBorderWidth,
+                color: switch (states) {
+                  _ when states.contains(WidgetState.disabled) =>
+                    AppColors.buttonBorderDisabled,
+                  _ when states.contains(WidgetState.pressed) =>
+                    AppColors.buttonBorderPressed,
+                  _ when states.contains(WidgetState.hovered) =>
+                    AppColors.buttonBorderHover,
+                  _ => AppColors.buttonBorder,
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+      menuBarTheme: const MenuBarThemeData(
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+          elevation: WidgetStatePropertyAll(0),
+          shadowColor: WidgetStatePropertyAll(Colors.transparent),
+          padding: WidgetStatePropertyAll(EdgeInsets.zero),
+        ),
+      ),
+      menuTheme: const MenuThemeData(
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(AppColors.menuSurface),
+          surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+          elevation: WidgetStatePropertyAll(6),
+          shadowColor: WidgetStatePropertyAll(Colors.black),
+          padding: WidgetStatePropertyAll(EdgeInsets.all(Dimens.xs)),
+          minimumSize: WidgetStatePropertyAll(Size(Dimens.menuMinWidth, 0)),
+          shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(Dimens.radiusMd)),
-              side: BorderSide(color: AppColors.border),
+              side: BorderSide(color: AppColors.purple),
+            ),
+          ),
+        ),
+      ),
+      menuButtonTheme: MenuButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(
+            Size(0, Dimens.menuItemHeight),
+          ),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: Dimens.sm + 2),
+          ),
+          textStyle: const WidgetStatePropertyAll(
+            TextStyle(fontFamily: fontFamily, fontSize: 14),
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.disabled)
+                ? AppColors.border
+                : states.contains(WidgetState.hovered) ||
+                      states.contains(WidgetState.focused)
+                ? AppColors.aqua
+                : AppColors.textPrimary,
+          ),
+          overlayColor: const WidgetStatePropertyAll(AppColors.menuItemHover),
+          shape: const WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(Dimens.radiusSm)),
             ),
           ),
         ),
