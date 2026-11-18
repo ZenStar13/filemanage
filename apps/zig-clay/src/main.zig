@@ -13,6 +13,7 @@ const BrowserViewModel = @import("presentation/BrowserViewModel.zig");
 const Frame = @import("presentation/Frame.zig");
 const root_view = @import("presentation/view/root.zig");
 const RaylibHost = @import("platform/RaylibHost.zig");
+const Chrome = @import("presentation/Chrome.zig");
 
 pub fn main(init: std.process.Init) !void {
     const gpa = init.gpa;
@@ -45,17 +46,35 @@ pub fn main(init: std.process.Init) !void {
     var frame_arena: std.heap.ArenaAllocator = .init(gpa);
     defer frame_arena.deinit();
 
+    var chrome: Chrome = .{};
+
     while (!host.shouldClose()) {
         _ = frame_arena.reset(.retain_capacity);
         vm.tick();
-        host.setPolling(vm.loading);
+        // Poll while loading, moving/resizing, or typing (caret blink).
+        host.setPolling(vm.loading or host.isInteracting() or vm.editing_location);
 
-        var frame: Frame = .{ .arena = frame_arena.allocator(), .input = host.sampleInput() };
+        var frame: Frame = .{
+            .arena = frame_arena.allocator(),
+            .input = host.sampleInput(vm.editing_location),
+            .measure = RaylibHost.measureText,
+            .maximized = host.isMaximized(),
+        };
         cl.beginLayout();
-        root_view.build(&vm, &frame);
-        host.present(cl.endLayout(), frame.wants_pointer_cursor);
+        root_view.build(&vm, &chrome, &frame);
+        host.present(cl.endLayout(), frame.wants_pointer_cursor, frame.wants_text_cursor);
 
         // Intents mutate state only after the frame has been drawn.
         for (frame.intents.items) |intent| vm.apply(intent);
+        for (frame.chrome.items) |intent| {
+            if (chrome.apply(intent)) |request| host.apply(request);
+        }
+        // A click outside an open menu closes it.
+        if (chrome.open_menu != null and frame.input.clicked and !frame.menu_hovered) _ = chrome.apply(.close_menu);
+        if (frame.input.keys.escape) {
+            if (chrome.open_menu != null) _ = chrome.apply(.close_menu);
+            if (chrome.about_open) _ = chrome.apply(.close_about);
+        }
+        host.updateInteraction();
     }
 }

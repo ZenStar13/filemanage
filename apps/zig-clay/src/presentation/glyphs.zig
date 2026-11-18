@@ -18,14 +18,23 @@ pub const eye = "\u{F06E}";
 pub const eye_slash = "\u{F070}";
 pub const chevron_right = "\u{F054}";
 pub const warning = "\u{F071}";
+pub const edit = "\u{EA73}";
+pub const check = "\u{F00C}";
+pub const app_icon = "\u{F07C}";
+pub const chrome_minimize = "\u{EABA}";
+pub const chrome_maximize = "\u{EAB9}";
+pub const chrome_restore = "\u{EABB}";
+pub const chrome_close = "\u{EAB8}";
 
 /// Optical-centre correction in em (`design/tokens.json` → `glyphCentering`).
 /// Nerd Font icons overflow their advance width to the right; shift them
 /// left by `opticalOffset(glyph) * font size` to centre them in a button.
 pub fn opticalOffset(glyph: []const u8) f32 {
     const table = .{
-        .{ back, 0.094 },    .{ forward, 0.094 }, .{ up, 0.036 },
-        .{ refresh, 0.122 }, .{ eye, 0.209 },     .{ eye_slash, 0.268 },
+        .{ back, 0.094 },            .{ forward, 0.094 },        .{ up, 0.036 },
+        .{ refresh, 0.122 },         .{ eye, 0.209 },            .{ eye_slash, 0.268 },
+        .{ chrome_minimize, 0.003 }, .{ chrome_restore, 0.003 }, .{ chrome_maximize, 0.065 },
+        .{ chrome_close, 0.033 },    .{ edit, 0.126 },           .{ app_icon, 0.209 },
     };
     inline for (table) |entry| if (std.mem.eql(u8, glyph, entry[0])) return entry[1];
     return 0;
@@ -38,7 +47,8 @@ pub const Icon = struct { glyph: []const u8, color: cl.Color };
 pub const codepoints = [_]i32{
     0xF07B, 0xF15B, 0xF15C, 0xF1C5, 0xF1C6, 0xF1C7, 0xF1C8, 0xF1C9, 0xF1C1, 0xF481, 0xF128,
     0xF015, 0xF108, 0xF019, 0xF03E, 0xF001, 0xF03D, 0xF0A0, 0xF060, 0xF061, 0xF062, 0xF021,
-    0xF06E, 0xF070, 0xF054, 0xF071, 0x2014, 0x00B7, 0x2026, 0x201C, 0x201D,
+    0xF06E, 0xF070, 0xF054, 0xF071, 0xEA73, 0xF00C, 0xF07C, 0xEABA, 0xEAB9, 0xEABB, 0xEAB8,
+    0x2014, 0x00B7, 0x2026, 0x201C, 0x201D,
 };
 
 /// Aqua folders, purple links, gold media, neutral everything else.

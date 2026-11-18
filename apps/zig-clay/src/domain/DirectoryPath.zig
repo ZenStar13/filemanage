@@ -41,6 +41,48 @@ pub fn dupe(self: DirectoryPath, gpa: std.mem.Allocator) error{OutOfMemory}!Dire
     return .{ .value = try gpa.dupe(u8, self.value) };
 }
 
+/// Resolves location-bar input: absolute paths, `~` / `~/…` (relative to
+/// `home`) and paths relative to `current`; `.`/`..` resolved lexically.
+/// Returns null for blank input. The result is allocated with `gpa`.
+pub fn resolveUserInput(
+    gpa: std.mem.Allocator,
+    input: []const u8,
+    current: DirectoryPath,
+    home: DirectoryPath,
+) error{OutOfMemory}!?DirectoryPath {
+    const text = std.mem.trim(u8, input, " \t");
+    if (text.len == 0) return null;
+    const raw = if (std.mem.eql(u8, text, "~"))
+        try gpa.dupe(u8, home.value)
+    else if (std.mem.startsWith(u8, text, "~/"))
+        try std.fs.path.join(gpa, &.{ home.value, text[2..] })
+    else if (std.fs.path.isAbsolute(text))
+        try gpa.dupe(u8, text)
+    else
+        try std.fs.path.join(gpa, &.{ current.value, text });
+    defer gpa.free(raw);
+
+    var parts: std.ArrayList([]const u8) = .empty;
+    defer parts.deinit(gpa);
+    var it = std.mem.tokenizeScalar(u8, raw, '/');
+    while (it.next()) |part| {
+        if (std.mem.eql(u8, part, ".")) continue;
+        if (std.mem.eql(u8, part, "..")) {
+            _ = parts.pop();
+        } else {
+            try parts.append(gpa, part);
+        }
+    }
+    if (parts.items.len == 0) return .{ .value = try gpa.dupe(u8, "/") };
+    var out: std.ArrayList(u8) = .empty;
+    errdefer out.deinit(gpa);
+    for (parts.items) |part| {
+        try out.append(gpa, '/');
+        try out.appendSlice(gpa, part);
+    }
+    return .{ .value = try out.toOwnedSlice(gpa) };
+}
+
 /// One breadcrumb segment: a label and the path up to (and including) it.
 pub const Segment = struct {
     label: []const u8,
@@ -84,6 +126,25 @@ test "breadcrumb segments" {
     var again = init("/home/user").?.segments();
     _ = again.next();
     try std.testing.expectEqualStrings("/home", again.next().?.path.value);
+}
+
+test "resolves location-bar input" {
+    const gpa = std.testing.allocator;
+    const current = init("/home/user/docs").?;
+    const home = init("/home/user").?;
+    const cases = [_][2][]const u8{
+        .{ "/etc/", "/etc" },
+        .{ "  ~ ", "/home/user" },
+        .{ "~/Music", "/home/user/Music" },
+        .{ "../Pictures/./x", "/home/user/Pictures/x" },
+        .{ "/../..", "/" },
+    };
+    for (cases) |case| {
+        const resolved = (try resolveUserInput(gpa, case[0], current, home)).?;
+        defer gpa.free(resolved.value);
+        try std.testing.expectEqualStrings(case[1], resolved.value);
+    }
+    try std.testing.expect((try resolveUserInput(gpa, "   ", current, home)) == null);
 }
 
 test "parent of root is null" {

@@ -47,6 +47,11 @@ pub const sidebar: Level = .{
     .cast = .{ .shadow = .{ .x = 3, .y = 0, .blur = 14, .alpha = 0.55 }, .direction = .right },
     .z_index = 3,
 };
+pub const title_bar: Level = .{
+    .surface = .{ 0x1B, 0x3A, 0x45, 255 },
+    .cast = .{ .shadow = .{ .x = 0, .y = 2, .blur = 10, .alpha = 0.5 }, .direction = .down },
+    .z_index = 4,
+};
 pub const button: Level = .{
     .surface = .{ 0x1D, 0x3D, 0x49, 255 },
     .cast = .{ .shadow = .{ .x = 0, .y = 1, .blur = 3, .alpha = 0.45 }, .direction = .under, .corner_radius = 8 },

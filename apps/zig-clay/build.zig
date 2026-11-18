@@ -52,7 +52,7 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&b.addRunArtifact(b.addTest(.{ .root_module = core })).step);
     const presentation_tests = b.addTest(.{ .root_module = b.createModule(.{
-        .root_source_file = b.path("src/presentation/format.zig"),
+        .root_source_file = b.path("src/presentation/tests.zig"),
         .target = target,
         .optimize = optimize,
         .imports = &.{.{ .name = "core", .module = core }},

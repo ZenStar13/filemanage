@@ -42,7 +42,20 @@ pub fn iconButton(frame: *Frame, b: IconButton) bool {
             .child_alignment = .{ .x = .center, .y = .center },
         },
         .corner_radius = .all(theme.radius.md),
-        .border = .{ .color = if (b.active) palette.aqua else palette.border, .width = .outside(1) },
+        // Strongly defined 2px border, coloured by state.
+        .border = .{
+            .color = if (b.active)
+                palette.aqua
+            else if (!b.enabled)
+                palette.button_border_disabled
+            else if (pressed)
+                palette.button_border_pressed
+            else if (cl.pointerOver(b.id))
+                palette.button_border_hover
+            else
+                palette.button_border,
+            .width = .outside(theme.layout.button_border_width),
+        },
         .background_color = blk: {
             if (b.active) break :blk palette.aqua;
             if (!b.enabled) break :blk palette.transparent;

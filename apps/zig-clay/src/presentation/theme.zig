@@ -18,6 +18,19 @@ pub const palette = struct {
     pub const text_on_aqua: cl.Color = rgb(0x04201F);
     pub const danger: cl.Color = rgb(0xFF6B8A);
     pub const transparent: cl.Color = .{ 0, 0, 0, 0 };
+    // Tool buttons: strongly defined borders.
+    pub const button_border: cl.Color = rgb(0x1A9C98);
+    pub const button_border_hover: cl.Color = rgb(0xA06CFF);
+    pub const button_border_pressed: cl.Color = rgb(0x00E5E0);
+    pub const button_border_disabled: cl.Color = rgb(0x1F4651);
+    // Location field, menus, window controls.
+    pub const location_surface: cl.Color = rgb(0x0E2128);
+    pub const menu_surface: cl.Color = rgb(0x1B3A45);
+    pub const menu_item_hover: cl.Color = rgb(0x3C2A66);
+    pub const window_control_hover: cl.Color = rgb(0x24495A);
+    pub const close_hover: cl.Color = rgb(0xE0405E);
+    pub const white: cl.Color = .{ 255, 255, 255, 255 };
+    pub const backdrop: cl.Color = .{ 0, 0, 0, 140 };
 };
 
 fn rgb(comptime hex: u24) cl.Color {
@@ -39,6 +52,7 @@ pub const font = struct {
     pub const body = size(15);
     pub const title = size(18);
     pub const tiny = size(11);
+    pub const menu = size(14);
 };
 
 pub const spacing = struct {
@@ -56,6 +70,14 @@ pub const radius = struct {
 pub const layout = struct {
     pub const sidebar_width: f32 = 220;
     pub const row_height: f32 = 28;
-    pub const toolbar_height: f32 = 44;
+    pub const action_row_height: f32 = 44;
+    pub const location_row_height: f32 = 40;
+    pub const toolbar_height: f32 = action_row_height + location_row_height;
+    pub const location_field_height: f32 = 30;
+    pub const title_bar_height: f32 = 36;
+    pub const window_control_width: f32 = 46;
+    pub const menu_item_height: f32 = 28;
+    pub const menu_min_width: f32 = 220;
+    pub const button_border_width: u16 = 2;
     pub const status_bar_height: f32 = 26;
 };

@@ -10,14 +10,17 @@ const sidebar = @import("sidebar.zig");
 const toolbar = @import("toolbar.zig");
 const file_list = @import("file_list.zig");
 const status_bar = @import("status_bar.zig");
+const title_bar = @import("title_bar.zig");
+const Chrome = @import("../Chrome.zig");
 
-pub fn build(vm: *const BrowserViewModel, frame: *Frame) void {
+pub fn build(vm: *const BrowserViewModel, chrome: *const Chrome, frame: *Frame) void {
     frame.emitShortcuts();
     cl.UI()(.{
         .id = .ID("Root"),
         .layout = .{ .direction = .top_to_bottom, .sizing = .grow },
         .background_color = theme.palette.background,
     })({
+        title_bar.build(vm, chrome, frame);
         cl.UI()(.{
             .id = .ID("Body"),
             .layout = .{ .direction = .left_to_right, .sizing = .grow },
@@ -33,5 +36,6 @@ pub fn build(vm: *const BrowserViewModel, frame: *Frame) void {
             });
         });
         status_bar.build(vm, frame);
+        if (chrome.about_open) title_bar.aboutDialog(frame);
     });
 }

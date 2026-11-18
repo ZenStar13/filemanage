@@ -6,6 +6,7 @@
 const std = @import("std");
 const core = @import("core");
 const Intent = @import("Intent.zig").Intent;
+const TextField = @import("TextField.zig");
 
 const domain = core.domain;
 const BrowseDirectory = core.application.BrowseDirectory;
@@ -51,6 +52,11 @@ pending: Navigation = .reload,
 /// Bumped when the keyboard moves the selection, so the list can reveal it.
 reveal_revision: u64 = 0,
 inbox: *Inbox,
+/// Home folder (owned copy), for Go → Home and `~` in the location bar.
+home: domain.DirectoryPath,
+/// Text input of the location row; meaningful while `editing_location`.
+location: TextField,
+editing_location: bool = false,
 /// Path of the latest request, for error messages.
 last_request: [std.fs.max_path_bytes]u8 = undefined,
 last_request_len: usize = 0,
@@ -72,6 +78,8 @@ pub fn init(deps: Dependencies) !BrowserViewModel {
         .browse = deps.browse,
         .history = try .init(deps.gpa, deps.places.startLocation()),
         .places = try deps.places.execute(deps.gpa),
+        .home = try deps.places.startLocation().dupe(deps.gpa),
+        .location = .{ .gpa = deps.gpa },
         .free_places = deps.free_places,
         .inbox = inbox,
     };
@@ -84,6 +92,8 @@ pub fn deinit(self: *BrowserViewModel) void {
     if (self.error_message) |m| self.gpa.free(m);
     self.free_places(self.gpa, self.places);
     self.history.deinit();
+    self.location.deinit();
+    self.gpa.free(self.home.value);
     self.inbox.release(self.gpa);
     self.* = undefined;
 }
@@ -146,6 +156,22 @@ pub fn apply(self: *BrowserViewModel, intent: Intent) void {
         .activate => |index| self.activate(index),
         .activate_selection => if (self.selected) |index| self.activate(index),
         .move_selection => |delta| self.moveSelection(delta),
+        .go_home => self.load(self.home, .visit),
+        .start_edit_location => {
+            self.location.reset(self.history.current.value) catch return self.setError("Out of memory");
+            self.editing_location = true;
+        },
+        .edit_location => |edit| if (self.editing_location) {
+            self.location.apply(edit) catch self.setError("Out of memory");
+        },
+        .submit_location => self.submitLocation(),
+        .cancel => {
+            if (self.editing_location) {
+                self.editing_location = false;
+            } else {
+                self.setError(null);
+            }
+        },
     }
 }
 
@@ -171,11 +197,21 @@ pub fn tick(self: *BrowserViewModel) void {
         if (self.listing) |*old| old.deinit();
         self.listing = listing;
         self.selected = null;
+        self.editing_location = false;
         self.setError(null);
     } else |err| {
         var buffer: [1024]u8 = undefined;
         self.setError(domain.describeError(err, self.pendingPathForError(), &buffer));
     }
+}
+
+fn submitLocation(self: *BrowserViewModel) void {
+    self.editing_location = false;
+    const resolved = domain.DirectoryPath.resolveUserInput(self.gpa, self.location.text(), self.history.current, self.home) catch
+        return self.setError("Out of memory");
+    const destination = resolved orelse return;
+    defer self.gpa.free(destination.value);
+    self.load(destination, .visit);
 }
 
 fn pendingPathForError(self: *const BrowserViewModel) []const u8 {
