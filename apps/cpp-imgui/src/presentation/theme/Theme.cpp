@@ -16,10 +16,12 @@ void applyTheme() {
     style.WindowRounding = 0;
     style.FramePadding = {dimens::kSm, 3.0F};
     style.FrameRounding = dimens::kRadiusMd;
-    style.FrameBorderSize = 1;
+    style.FrameBorderSize = 0; // tool buttons draw their own 2px borders
     style.ItemSpacing = {dimens::kSm, dimens::kXs};
     style.CellPadding = {dimens::kSm, 0};
     style.ScrollbarSize = 12;
+    style.PopupRounding = dimens::kRadiusMd;
+    style.PopupBorderSize = 1;
     style.ScrollbarRounding = dimens::kRadiusMd;
     style.TabRounding = dimens::kRadiusSm;
     style.SelectableTextAlign = {0, 0.5F};
@@ -30,8 +32,10 @@ void applyTheme() {
     c[ImGuiCol_TextDisabled] = kBorder;
     c[ImGuiCol_WindowBg] = kBackground;
     c[ImGuiCol_ChildBg] = kBackground;
-    c[ImGuiCol_PopupBg] = kSurfaceRaised;
-    c[ImGuiCol_Border] = kBorder;
+    c[ImGuiCol_PopupBg] = kMenuSurface;
+    c[ImGuiCol_ModalWindowDimBg] = rgb(0x000000, 0.55F);
+    c[ImGuiCol_Border] = kPurple; // popups, menus, tooltips
+    c[ImGuiCol_MenuBarBg] = elevation::kTitleBar.surface;
     c[ImGuiCol_FrameBg] = kSurfaceRaised;
     c[ImGuiCol_FrameBgHovered] = kPurpleMuted;
     c[ImGuiCol_FrameBgActive] = kAquaMuted;

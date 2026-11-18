@@ -18,6 +18,35 @@ DirectoryPath DirectoryPath::root() {
     return DirectoryPath{"/"};
 }
 
+std::optional<DirectoryPath> DirectoryPath::resolveUserInput(std::string_view input,
+                                                             const DirectoryPath& current,
+                                                             const DirectoryPath& home) {
+    const auto first = input.find_first_not_of(" \t");
+    if (first == std::string_view::npos) {
+        return std::nullopt;
+    }
+    const auto text = input.substr(first, input.find_last_not_of(" \t") - first + 1);
+    std::filesystem::path raw;
+    if (text == "~") {
+        raw = home.value();
+    } else if (text.starts_with("~/")) {
+        raw = home.value() / std::filesystem::path{text.substr(2)};
+    } else if (text.starts_with('/')) {
+        raw = std::filesystem::path{text};
+    } else {
+        raw = current.value() / std::filesystem::path{text};
+    }
+    std::filesystem::path normal{"/"};
+    for (const auto& part : raw.relative_path()) {
+        if (part == "..") {
+            normal = normal.has_relative_path() ? normal.parent_path() : normal;
+        } else if (part != "." && !part.empty()) {
+            normal /= part;
+        }
+    }
+    return DirectoryPath{std::move(normal)};
+}
+
 std::string DirectoryPath::name() const {
     return isRoot() ? path_.string() : path_.filename().string();
 }

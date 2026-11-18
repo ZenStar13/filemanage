@@ -3,6 +3,7 @@
 #include "domain/DirectoryPath.hpp"
 
 #include <filesystem>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -13,6 +14,14 @@ namespace fm::presentation::action {
 struct GoBack {};
 struct GoForward {};
 struct GoUp {};
+struct GoHome {};
+/// Location row: switch the breadcrumbs to a text input (Ctrl+L).
+struct StartEditLocation {};
+struct SubmitLocation {
+    std::string text;
+};
+/// Escape: leave location editing, otherwise dismiss the error banner.
+struct Cancel {};
 struct Refresh {};
 struct ToggleHidden {};
 struct DismissError {};
@@ -34,9 +43,11 @@ struct Activate {
 
 namespace fm::presentation {
 
-using Action = std::variant<action::GoBack, action::GoForward, action::GoUp, action::Refresh,
-                            action::ToggleHidden, action::DismissError, action::ActivateSelection,
-                            action::MoveSelection, action::Open, action::Select, action::Activate>;
+using Action =
+    std::variant<action::GoBack, action::GoForward, action::GoUp, action::GoHome,
+                 action::StartEditLocation, action::SubmitLocation, action::Cancel, action::Refresh,
+                 action::ToggleHidden, action::DismissError, action::ActivateSelection,
+                 action::MoveSelection, action::Open, action::Select, action::Activate>;
 
 using ActionQueue = std::vector<Action>;
 

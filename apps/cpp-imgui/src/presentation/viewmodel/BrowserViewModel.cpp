@@ -1,6 +1,7 @@
 #include "presentation/viewmodel/BrowserViewModel.hpp"
 
 #include <algorithm>
+#include <utility>
 
 namespace fm::presentation {
 
@@ -15,7 +16,8 @@ template <class... Ts> struct Overloaded : Ts... {
 
 BrowserViewModel::BrowserViewModel(application::BrowseDirectory browse,
                                    const application::ListPlaces& places)
-    : loader_(std::move(browse)), history_(places.startLocation()), places_(places()) {
+    : loader_(std::move(browse)), history_(places.startLocation()), home_(places.startLocation()),
+      places_(places()) {
     navigate(Reload{});
 }
 
@@ -43,6 +45,20 @@ void BrowserViewModel::dispatch(const Action& action) {
                    [this](const action::GoBack&) { navigate(Back{}); },
                    [this](const action::GoForward&) { navigate(Forward{}); },
                    [this](const action::GoUp&) { navigate(Up{}); },
+                   [this](const action::GoHome&) { navigate(Visit{home_}); },
+                   [this](const action::StartEditLocation&) { editingLocation_ = true; },
+                   [this](const action::SubmitLocation& a) {
+                       editingLocation_ = false;
+                       if (auto destination = domain::DirectoryPath::resolveUserInput(
+                               a.text, history_.current(), home_)) {
+                           navigate(Visit{std::move(*destination)});
+                       }
+                   },
+                   [this](const action::Cancel&) {
+                       if (!std::exchange(editingLocation_, false)) {
+                           error_.reset();
+                       }
+                   },
                    [this](const action::Refresh&) { navigate(Reload{}); },
                    [this](const action::Open& a) { navigate(Visit{a.path}); },
                    [this](const action::ToggleHidden&) {
@@ -73,6 +89,7 @@ void BrowserViewModel::tick() {
         listing_ = std::move(*completed->result);
         selected_.reset();
         error_.reset();
+        editingLocation_ = false;
         rebuildVisible();
     } else {
         error_ = completed->result.error();

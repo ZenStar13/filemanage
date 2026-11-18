@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace fm::domain {
@@ -15,6 +16,12 @@ class DirectoryPath {
   public:
     [[nodiscard]] static std::optional<DirectoryPath> from(const std::filesystem::path& raw);
     [[nodiscard]] static DirectoryPath root();
+    /// Resolves location-bar input: absolute paths, `~` / `~/…` (relative to
+    /// `home`) and paths relative to `current`; `.`/`..` resolved lexically.
+    /// Returns nullopt for blank input.
+    [[nodiscard]] static std::optional<DirectoryPath> resolveUserInput(std::string_view input,
+                                                                       const DirectoryPath& current,
+                                                                       const DirectoryPath& home);
 
     [[nodiscard]] const std::filesystem::path& value() const noexcept { return path_; }
     [[nodiscard]] std::string string() const { return path_.string(); }

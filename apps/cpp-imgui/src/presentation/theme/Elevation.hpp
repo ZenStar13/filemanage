@@ -29,6 +29,7 @@ inline constexpr Level kFileList{palette::rgb(0x0B1A20), {0, 0, 0, 0}};
 inline constexpr Level kHeader{palette::rgb(0x10262E), {0, 1, 4, 0.35F}};
 inline constexpr Level kToolbar{palette::rgb(0x132C35), {0, 2, 8, 0.45F}};
 inline constexpr Level kSidebar{palette::rgb(0x17323C), {3, 0, 14, 0.55F}};
+inline constexpr Level kTitleBar{palette::rgb(0x1B3A45), {0, 2, 10, 0.5F}};
 inline constexpr Level kButton{palette::rgb(0x1D3D49), {0, 1, 3, 0.45F}};
 
 /// Shadow cast to the right of `caster`'s right edge (e.g. the sidebar).

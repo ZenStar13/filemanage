@@ -32,6 +32,17 @@ inline constexpr ImVec4 kTextSecondary = rgb(0x8DB6BC);
 inline constexpr ImVec4 kTextOnAqua = rgb(0x04201F);
 inline constexpr ImVec4 kDanger = rgb(0xFF6B8A);
 
+// Tool buttons: strongly defined borders.
+inline constexpr ImVec4 kButtonBorder = rgb(0x1A9C98);
+inline constexpr ImVec4 kButtonBorderHover = kPurple;
+inline constexpr ImVec4 kButtonBorderPressed = kAqua;
+inline constexpr ImVec4 kButtonBorderDisabled = kBorder;
+// Location field, menus, window controls.
+inline constexpr ImVec4 kLocationSurface = rgb(0x0E2128);
+inline constexpr ImVec4 kMenuSurface = rgb(0x1B3A45);
+inline constexpr ImVec4 kWindowControlHover = rgb(0x24495A);
+inline constexpr ImVec4 kCloseHover = rgb(0xE0405E);
+
 } // namespace fm::presentation::palette
 
 namespace fm::presentation::dimens {
@@ -44,7 +55,13 @@ inline constexpr float kRadiusSm = 4.0F;
 inline constexpr float kRadiusMd = 8.0F;
 inline constexpr float kSidebarWidth = 220.0F;
 inline constexpr float kRowHeight = 28.0F;
-inline constexpr float kToolbarHeight = 44.0F;
+inline constexpr float kActionRowHeight = 44.0F;
+inline constexpr float kLocationRowHeight = 40.0F;
+inline constexpr float kToolbarHeight = kActionRowHeight + kLocationRowHeight;
+inline constexpr float kLocationFieldHeight = 30.0F;
+inline constexpr float kTitleBarHeight = 36.0F;
+inline constexpr float kWindowControlWidth = 46.0F;
+inline constexpr float kButtonBorderWidth = 2.0F;
 inline constexpr float kStatusBarHeight = 26.0F;
 
 // Design tokens give font sizes in em pixels (like CSS, Flutter, iced...).

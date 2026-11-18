@@ -19,6 +19,13 @@ inline constexpr const char* kEye = "";
 inline constexpr const char* kEyeSlash = "";
 inline constexpr const char* kChevronRight = "";
 inline constexpr const char* kWarning = "";
+inline constexpr const char* kEdit = "\uEA73";
+inline constexpr const char* kCheck = "\uF00C";
+inline constexpr const char* kAppIcon = "\uF07C";
+inline constexpr const char* kChromeMinimize = "\uEABA";
+inline constexpr const char* kChromeMaximize = "\uEAB9";
+inline constexpr const char* kChromeRestore = "\uEABB";
+inline constexpr const char* kChromeClose = "\uEAB8";
 
 struct Icon {
     const char* glyph;

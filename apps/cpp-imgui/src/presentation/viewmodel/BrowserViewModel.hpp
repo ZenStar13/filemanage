@@ -35,6 +35,8 @@ class BrowserViewModel {
     [[nodiscard]] bool canGoUp() const { return history_.canGoUp(); }
     [[nodiscard]] bool showsHidden() const { return visibility_ == domain::Visibility::ShowHidden; }
     [[nodiscard]] bool isLoading() const { return loading_; }
+    /// Whether the location row shows a text input instead of breadcrumbs.
+    [[nodiscard]] bool isEditingLocation() const { return editingLocation_; }
     /// Bumped when the selection moves via keyboard, so views can reveal it.
     [[nodiscard]] std::uint64_t revealRevision() const { return revealRevision_; }
 
@@ -60,6 +62,8 @@ class BrowserViewModel {
 
     DirectoryLoader loader_;
     domain::NavigationHistory history_;
+    domain::DirectoryPath home_;
+    bool editingLocation_{false};
     std::vector<domain::Place> places_;
     std::optional<domain::DirectoryListing> listing_;
     std::vector<const domain::FileEntry*> visible_;

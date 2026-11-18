@@ -12,9 +12,34 @@ namespace fm::app {
 Application::Application(Services services, std::filesystem::path assetDir)
     : services_(std::move(services)), assetDir_(std::move(assetDir)) {}
 
+namespace {
+
+/// Forwards a chrome request from the presentation layer to the platform.
+void apply(platform::GlfwWindow& window, const presentation::WindowRequest& request) {
+    using Kind = presentation::WindowRequest::Kind;
+    switch (request.kind) {
+    case Kind::Minimize:
+        window.minimize();
+        break;
+    case Kind::ToggleMaximize:
+        window.toggleMaximize();
+        break;
+    case Kind::Close:
+        window.requestClose();
+        break;
+    case Kind::BeginMove:
+        window.beginMove();
+        break;
+    case Kind::BeginResize:
+        window.beginResize(request.edges); // same bit layout as GlfwWindow::Edge
+        break;
+    }
+}
+
+} // namespace
+
 int Application::run() {
-    const platform::GlfwWindow window{
-        {.title = "Files (Dear ImGui)", .width = 1100, .height = 700}};
+    platform::GlfwWindow window{{.title = "Files (Dear ImGui)", .width = 1100, .height = 700}};
 
     presentation::applyTheme();
     ImGui::GetStyle().ScaleAllSizes(window.contentScale());
@@ -30,14 +55,19 @@ int Application::run() {
     constexpr int kBurstFrames = 20;
     int burst = kBurstFrames;
     while (!window.shouldClose()) {
-        const bool busy = burst > 0 || viewModel.isLoading();
+        const bool busy = burst > 0 || viewModel.isLoading() || window.isInteracting();
         burst = window.waitEvents(busy ? 1.0 / 60.0 : 0.5) ? kBurstFrames : burst - 1;
 
         viewModel.tick();
         window.beginFrame();
-        for (const auto& action : view.draw(viewModel)) {
+        auto frame = view.draw(viewModel, window.isMaximized());
+        for (const auto& action : frame.actions) {
             viewModel.dispatch(action);
         }
+        for (const auto& request : frame.window) {
+            apply(window, request);
+        }
+        window.updateInteraction();
         window.endFrame();
     }
     return 0;

@@ -62,6 +62,21 @@ float opticalOffset(std::string_view glyph) {
     if (glyph == glyphs::kEyeSlash) {
         return 0.268F;
     }
+    if (glyph == glyphs::kChromeMinimize || glyph == glyphs::kChromeRestore) {
+        return 0.003F;
+    }
+    if (glyph == glyphs::kChromeMaximize) {
+        return 0.065F;
+    }
+    if (glyph == glyphs::kChromeClose) {
+        return 0.033F;
+    }
+    if (glyph == glyphs::kEdit) {
+        return 0.126F;
+    }
+    if (glyph == glyphs::kAppIcon) {
+        return 0.209F;
+    }
     return 0.0F;
 }
 

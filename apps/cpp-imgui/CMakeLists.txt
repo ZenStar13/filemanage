@@ -52,6 +52,7 @@ add_library(fm_presentation STATIC
     src/presentation/viewmodel/BrowserViewModel.cpp
     src/presentation/view/BrowserView.cpp
     src/presentation/view/Toolbar.cpp
+    src/presentation/view/TitleBar.cpp
     src/presentation/view/Sidebar.cpp
     src/presentation/view/FileTable.cpp
     src/presentation/view/StatusBar.cpp)

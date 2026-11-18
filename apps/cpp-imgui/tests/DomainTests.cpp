@@ -29,6 +29,21 @@ TEST_CASE("DirectoryPath enforces absolute paths and builds breadcrumbs") {
     CHECK(path("/home/user/").name() == "user");
 }
 
+TEST_CASE("DirectoryPath resolves location-bar input") {
+    const auto current = path("/home/user/docs");
+    const auto home = path("/home/user");
+    const auto resolve = [&](const char* s) {
+        const auto p = DirectoryPath::resolveUserInput(s, current, home);
+        return p ? p->string() : std::string{"<none>"};
+    };
+    CHECK(resolve("/etc/") == "/etc");
+    CHECK(resolve("  ~ ") == "/home/user");
+    CHECK(resolve("~/Music") == "/home/user/Music");
+    CHECK(resolve("../Pictures/./x") == "/home/user/Pictures/x");
+    CHECK(resolve("/../..") == "/");
+    CHECK(resolve("   ") == "<none>");
+}
+
 TEST_CASE("NavigationHistory supports back/forward and clears forward on visit") {
     NavigationHistory history{path("/a")};
     history.visit(path("/a/b"));
