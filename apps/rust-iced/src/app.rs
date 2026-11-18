@@ -78,7 +78,7 @@ impl App {
     pub fn view(&self) -> Element<'_, Message> {
         let mut layers = stack![
             column![space().height(layout::TITLE_BAR_HEIGHT), self.browser.view().map(Message::Browser)],
-            chrome::title_bar(&self.chrome, self.title()).map(Message::Chrome),
+            chrome::title_bar(&self.chrome, self.browser.title()).map(Message::Chrome),
         ];
         if let Some(menu) = chrome::menu_overlay(&self.chrome, self.browser.menu_state()) {
             layers = layers.push(menu.map(Message::Chrome));

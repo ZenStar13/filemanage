@@ -29,6 +29,7 @@ filemanage/
 ├── docs/
 │   ├── ARCHITECTURE.md       shared feature scope, layers, MVVM-per-paradigm, palette roles
 │   ├── ELEVATION.md          depth/elevation change: cost and approach per stack
+│   ├── CHROME.md             custom title bar, menus, location input: cost and pitfalls per stack
 │   └── screenshots/
 ├── libs/rust/
 │   ├── fm-core/              shared Rust domain + use cases + filesystem adapters
@@ -42,7 +43,10 @@ filemanage/
 Every app has its own README with its folder structure and stack-specific
 notes. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains the shared design.
 [docs/ELEVATION.md](docs/ELEVATION.md) compares what it took to add depth
-(elevation, shadows) to each stack.
+(elevation, shadows) to each stack. [docs/CHROME.md](docs/CHROME.md) compares
+client-side decorations (custom title bar, menus, window controls), the
+editable location bar and text input, including what each approach means on
+Wayland/sway.
 
 ## Build & run
 
@@ -62,8 +66,8 @@ Rust apps on X11/Wayland also need the usual `libxkbcommon-x11-0` /
 
 | App | Lint / format | Tests |
 |---|---|---|
-| Rust (all) | `cargo clippy --workspace --all-targets` (pedantic, zero warnings), `cargo fmt` | `cargo test --workspace` → 22 tests (core, kit, iced update/keys, egui view model, Slint presenter) |
-| Flutter | `flutter analyze` (strict casts/inference + extra lints, zero issues), `dart format` | `flutter test` → 14 tests (domain, view model with fakes, widget) |
+| Rust (all) | `cargo clippy --workspace --all-targets` (pedantic, zero warnings), `cargo fmt` | `cargo test --workspace` → 23 tests (core, kit, iced update/keys, egui view model, Slint presenter) |
+| Flutter | `flutter analyze` (strict casts/inference + extra lints, zero issues), `dart format` | `flutter test` → 15 tests (domain, view model with fakes, widget) |
 | Dear ImGui | `-Wall -Wextra -Wpedantic -Wconversion … -Werror`, `.clang-format`, `.clang-tidy` | `ctest --preset debug` (doctest: domain, use case, fs adapter) |
 | Zig | `zig fmt` | `zig build test` → 12 tests (domain, use case, fs adapter, formatters) |
 
@@ -142,7 +146,7 @@ especially if you want Rust plus a declarative UI.
 not a toolkit: tooltips, double-click detection, hover cursors, scroll
 virtualisation and the glyph atlas were all hand-built. It's very fast, with
 small binaries and explicit memory (arenas per frame and per listing). But
-there are no text inputs or accessibility, raylib bakes a fixed glyph set
+there is no accessibility, text input had to be hand-written (`TextField.zig`), raylib bakes a fixed glyph set
 (non-Latin file names don't render), and Zig 0.16/0.17 API churn (`std.Io`,
 package manager) adds friction. Interesting technology; not yet practical for
 end-user apps.

@@ -16,10 +16,13 @@ differences you notice come from the toolkit, not from the design.
 | Keyboard selection | <kbd>↑</kbd>/<kbd>↓</kbd> move the selection and scroll it into view |
 | Errors | Unreadable folders show a dismissible banner; your location stays the same |
 | Status bar | Folder/file counts, total size, hidden count, current path / loading state |
+| Custom title bar | Client-side decorations: File / View / Go / Help menus, centred folder name, minimise / maximise / close, drag to move, double-click to maximise, resize from any edge, About dialog |
+| Location input | Click the breadcrumb field, the pencil, or <kbd>Ctrl</kbd>+<kbd>L</kbd> to type a path (`~`, relative and `..` resolved); <kbd>Enter</kbd> navigates, <kbd>Esc</kbd> cancels |
 
 Shortcuts: <kbd>Alt</kbd>+<kbd>←</kbd> back, <kbd>Alt</kbd>+<kbd>→</kbd> forward,
 <kbd>Alt</kbd>+<kbd>↑</kbd> or <kbd>Backspace</kbd> up, <kbd>F5</kbd> refresh,
-<kbd>Esc</kbd> dismiss error.
+<kbd>Esc</kbd> cancel typing / close menu / dismiss error, <kbd>Ctrl</kbd>+<kbd>L</kbd>
+open location, <kbd>Alt</kbd>+<kbd>Home</kbd> home, <kbd>Ctrl</kbd>+<kbd>Q</kbd> quit.
 
 Opening files, file operations, search and sorting are out of scope for this draft.
 
